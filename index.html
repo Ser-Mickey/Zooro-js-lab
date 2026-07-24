@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooro | Smart Web Solutions</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Link External JavaScript with defer -->
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="logo">Zooro<span>.</span></div>
+        <nav>
+            <a href="index.html" class="active">Home</a>
+            <a href="#services">Services</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <button id="theme-toggle-btn" class="theme-btn">🌙 Dark Mode</button>
+    </header>
+
+    <!-- Welcome Banner (Rubric Feature 1) -->
+    <section class="banner-section">
+        <div id="welcome-banner" class="welcome-box">
+            <!-- Dynamic JS Welcome Message renders here -->
+        </div>
+    </section>
+
+    <!-- Main Hero Section -->
+    <main class="container">
+        <section class="hero">
+            <h1>Innovative Digital Experience</h1>
+            <p>Empowering businesses with custom interactive web platforms.</p>
+        </section>
+
+        <!-- Dynamic Services Section (Rubric Feature 3) -->
+        <section id="services" class="services-section">
+            <h2>Our Core Services</h2>
+            <p>Click any card to select a service:</p>
+
+            <div id="selection-status" class="selection-status" style="display: none;"></div>
+
+            <div class="cards-grid">
+                <!-- Service Card 1 -->
+                <div class="card interactive-card">
+                    <h3>Web Development</h3>
+                    <p>Modern responsive websites crafted for optimal usability and performance.</p>
+                    <button class="toggle-details-btn" data-target="info-1">Read More ▼</button>
+                    <div id="info-1" class="extra-info hidden">
+                        <p><strong>Includes:</strong> HTML5, CSS3, ES6 JavaScript, responsive design, and SEO optimization.</p>
+                    </div>
+                </div>
+
+                <!-- Service Card 2 -->
+                <div class="card interactive-card">
+                    <h3>UI/UX Architecture</h3>
+                    <p>User-first interfaces focused on conversions, seamless navigation, and accessibility.</p>
+                    <button class="toggle-details-btn" data-target="info-2">Read More ▼</button>
+                    <div id="info-2" class="extra-info hidden">
+                        <p><strong>Includes:</strong> Wireframing, prototyping, user journey mapping, and visual styling.</p>
+                    </div>
+                </div>
+
+                <!-- Service Card 3 -->
+                <div class="card interactive-card">
+                    <h3>Database Systems</h3>
+                    <p>Secure database architecture integrated seamlessly with modern server engines.</p>
+                    <button class="toggle-details-btn" data-target="info-3">Read More ▼</button>
+                    <div id="info-3" class="extra-info hidden">
+                        <p><strong>Includes:</strong> MySQL database design, RESTful APIs, and cloud hosting setups.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form Validation Section (Rubric Feature 2) -->
+        <section id="contact" class="contact-section">
+            <h2>Get In Touch</h2>
+            <form id="contact-form" novalidate>
+                <div class="form-group">
+                    <label for="fullname">Full Name *</label>
+                    <input type="text" id="fullname" name="fullname" placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" placeholder="e.g. victor@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Your Message *</label>
+                    <textarea id="message" name="message" rows="4" placeholder="How can we help you?"></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Zooro Lab Project. Built by Victor for Web Development Assignment.</p>
+    </footer>
+
+</body>
+</html>

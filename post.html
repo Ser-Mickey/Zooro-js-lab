@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post a House — Zooro Kenya</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">🏠</span> Zooro<span>Kenya</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="listings.html">Listings</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="post.html" class="nav-cta active">Post a House</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <span id="user-greeting" class="user-greeting"></span>
+        <button id="favorites-btn" class="favorites-btn" title="Saved listings"><span class="heart-icon">♥</span> <span id="favorites-count">0</span></button>
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <h1>List Your Property on Zooro</h1>
+    <p>Reach thousands of tenants in Nairobi — it's free to post</p>
+  </div>
+
+  <div class="form-section">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>Property Details</h2>
+        <p>Fill in the details below and we'll publish your listing within 24 hours.</p>
+      </div>
+
+      <form action="#" method="post">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="landlord-name">Landlord Name</label>
+            <input type="text" id="landlord-name" name="landlord_name"
+                   placeholder="Enter your full name..." required />
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone"
+                   placeholder="e.g. +254 701 111 110" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location / Estate</label>
+          <input type="text" id="location" name="location"
+                 placeholder="e.g. Kahawa West, Ngong Road..." required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="house-type">House Type</label>
+            <select id="house-type" name="house_type" required>
+              <option value="" disabled selected>Select type...</option>
+              <option>Bedsitter</option>
+              <option>Studio</option>
+              <option>1 Bedroom</option>
+              <option>2 Bedroom</option>
+              <option>3 Bedroom</option>
+              <option>4 Bedroom+</option>
+              <option>Maisonette</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="rent">Monthly Rent (KSh)</label>
+            <input type="number" id="rent" name="rent"
+                   placeholder="e.g. 25000" min="1000" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="available-from">Available From</label>
+          <input type="date" id="available-from" name="available_from" required />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" name="description"
+                    placeholder="Describe your property — amenities, nearby places, transport links..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Upload Photo</label>
+          <label class="file-upload-area" for="photo-upload">
+            <input type="file" id="photo-upload" name="photos"
+                   accept="image/*" multiple />
+            <div class="upload-icon">📷</div>
+            <p>Choose file or drag and drop here</p>
+            <span>PNG, JPG up to 5MB each</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-submit">Submit Listing →</button>
+
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="nav-logo">🏠 Zooro<span style="color:var(--gold)">Kenya</span></div>
+        <p>Your trusted platform for finding verified rental homes across Nairobi's finest estates.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Navigate</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="listings.html">Listings</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="post.html">Post a House</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="mailto:hello@zooro.co.ke">hello@zooro.co.ke</a></li>
+          <li><a href="tel:+254700111000">+254 700 111 000</a></li>
+          <li><span>Nairobi, Kenya</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Zooro Kenya. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
