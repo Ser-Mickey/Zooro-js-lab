@@ -1,208 +1,434 @@
-/**
- * Zooro JavaScript Lab - Main Interactive Logic
- * Author: Victor
- * Student No: 165080
- * Course Assignment: Web Development (JS Lab)
- */
+/* ================================================================
+   ZOORO KENYA — script.js
+   JavaScript Lab | Web Application Development
+   ------------------------------------------------------------
+  * Victor Nyagah
+  * Student No: 165080
+  * BBIT, Web Application Project
+   ================================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
-
-    // ==========================================
-    // 1. Personalised Welcome Message (5 Marks)
-    // ==========================================
-    function initWelcomeMessage() {
-        const welcomeBanner = document.getElementById('welcome-banner');
-        if (!welcomeBanner) return; // Guard clause if element isn't on current page
-
-        // Retrieve saved username from sessionStorage to prevent prompt spam on reload
-        let username = sessionStorage.getItem('zooro_user');
-
-        if (!username) {
-            username = prompt('Welcome to Zooro! Please enter your name:');
-
-            // Sanitize and validate input
-            if (username && username.trim() !== '') {
-                username = username.trim();
-                sessionStorage.setItem('zooro_user', username);
-            } else {
-                username = 'Valued Guest';
-            }
-        }
-
-        welcomeBanner.innerHTML = `👋 Welcome back, <strong>${escapeHtml(username)}</strong>! Explore our services below.`;
-    }
-
-    // ==========================================
-    // 2. Comprehensive Form Validation (10 Marks)
-    // ==========================================
-    function initFormValidation() {
-        const contactForm = document.getElementById('contact-form');
-        if (!contactForm) return; // Guard clause
-
-        contactForm.addEventListener('submit', (event) => {
-            event.preventDefault(); // Intercept browser submission
-            
-            let isFormValid = true;
-            
-            // Clear previous error messages and styling
-            clearFormErrors(contactForm);
-
-            // Fetch form fields
-            const nameInput = document.getElementById('fullname');
-            const emailInput = document.getElementById('email');
-            const messageInput = document.getElementById('message');
-
-            // 1. Validate Name
-            if (!nameInput || nameInput.value.trim() === '') {
-                showFieldError(nameInput, 'Full Name is required.');
-                isFormValid = false;
-            }
-
-            // 2. Validate Email (Required + Format Regex)
-            if (!emailInput || emailInput.value.trim() === '') {
-                showFieldError(emailInput, 'Email address is required.');
-                isFormValid = false;
-            } else if (!isValidEmail(emailInput.value.trim())) {
-                showFieldError(emailInput, 'Please enter a valid email address (e.g., name@domain.com).');
-                isFormValid = false;
-            }
-
-            // 3. Validate Message
-            if (!messageInput || messageInput.value.trim() === '') {
-                showFieldError(messageInput, 'Please enter a message.');
-                isFormValid = false;
-            }
-
-            // Successful Submission Confirmation
-            if (isFormValid) {
-                showSubmissionSuccess(contactForm);
-            }
-        });
-    }
-
-    // ==========================================
-    // 3. Dynamic Content Features (10 Marks)
-    // ==========================================
-
-    // Feature A: Show/Hide (Expandable Content)
-    function initExpandableContent() {
-        const toggleButtons = document.querySelectorAll('.toggle-details-btn');
-
-        toggleButtons.forEach((button) => {
-            button.addEventListener('click', () => {
-                const targetId = button.getAttribute('data-target');
-                const targetContent = document.getElementById(targetId);
-
-                if (targetContent) {
-                    const isHidden = targetContent.classList.contains('hidden');
-                    
-                    if (isHidden) {
-                        targetContent.classList.remove('hidden');
-                        button.textContent = 'Show Less ▲';
-                        button.classList.add('active-btn');
-                    } else {
-                        targetContent.classList.add('hidden');
-                        button.textContent = 'Read More ▼';
-                        button.classList.remove('active-btn');
-                    }
-                }
-            });
-        });
-    }
-
-    // Feature B: Interactive Card Selection & Dynamic Status Bar
-    function initCardSelection() {
-        const serviceCards = document.querySelectorAll('.interactive-card');
-        const selectionNotice = document.getElementById('selection-status');
-
-        serviceCards.forEach((card) => {
-            card.addEventListener('click', () => {
-                // Toggle active state across cards
-                serviceCards.forEach(c => c.classList.remove('card-selected'));
-                card.classList.add('card-selected');
-
-                const serviceTitle = card.querySelector('h3') ? card.querySelector('h3').textContent : 'Service';
-                
-                if (selectionNotice) {
-                    selectionNotice.innerHTML = `✅ You selected: <strong>${escapeHtml(serviceTitle)}</strong>. Click "Inquire Now" to get started!`;
-                    selectionNotice.style.display = 'block';
-                }
-            });
-        });
-    }
-
-    // Feature C: Dark/Light Mode Theme Toggle
-    function initThemeToggle() {
-        const themeBtn = document.getElementById('theme-toggle-btn');
-        if (!themeBtn) return;
-
-        themeBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-theme');
-            const isDark = document.body.classList.contains('dark-theme');
-            themeBtn.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-        });
-    }
-
-    // ==========================================
-    // Helper & Utility Functions
-    // ==========================================
-    
-    function showFieldError(inputElement, errorMessage) {
-        if (!inputElement) return;
-        inputElement.classList.add('input-error');
-
-        const errorSpan = document.createElement('span');
-        errorSpan.className = 'error-text';
-        errorSpan.textContent = errorMessage;
-
-        if (inputElement.parentElement) {
-            inputElement.parentElement.appendChild(errorSpan);
-        }
-    }
-
-    function clearFormErrors(form) {
-        const errorTexts = form.querySelectorAll('.error-text');
-        errorTexts.forEach(el => el.remove());
-
-        const errorInputs = form.querySelectorAll('.input-error');
-        errorInputs.forEach(el => el.classList.remove('input-error'));
-
-        const successMsg = form.querySelector('.success-message');
-        if (successMsg) successMsg.remove();
-    }
-
-    function showSubmissionSuccess(form) {
-        const successDiv = document.createElement('div');
-        successDiv.className = 'success-message';
-        successDiv.innerHTML = '🎉 Thank you! Your message has been validated and submitted successfully.';
-        
-        form.reset();
-        form.appendChild(successDiv);
-
-        setTimeout(() => {
-            successDiv.remove();
-        }, 5000);
-    }
-
-    function isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
-
-    function escapeHtml(str) {
-        return str.replace(/[&<>"']/g, (m) => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        })[m]);
-    }
-
-    // Initialize all modules safely
-    initWelcomeMessage();
-    initFormValidation();
-    initExpandableContent();
-    initCardSelection();
-    initThemeToggle();
+  initWelcomeMessage();     // Feature 1: personalised welcome (Home)
+  initHomeSearchValidation();
+  initPostForm();           // Feature 2: form validation (Post a House)
+  initContactForm();        // Feature 2: form validation (Contact)
+  initGalleryFavorites();   // Feature 3: dynamic content (Gallery)
+  initListingsExpand();     // Feature 3: dynamic content (Listings)
+  initListingsLiveFilter(); // Feature 3: dynamic content (Listings)
+  initThemeToggle();        // Bonus: site-wide dark mode
+  initBackToTop();          // Bonus: site-wide back-to-top button
 });
+
+/* ================================================================
+   SHARED HELPERS
+   ================================================================ */
+
+/** Escapes user-typed text before it's inserted as HTML. */
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/** Marks a field invalid and prints a short message right under it. */
+function showFieldError(field, message) {
+  clearFieldError(field);
+  field.classList.add('input-error');
+  const error = document.createElement('span');
+  error.className = 'field-error';
+  error.textContent = message;
+  field.insertAdjacentElement('afterend', error);
+}
+
+/** Removes the error state + message for a single field. */
+function clearFieldError(field) {
+  field.classList.remove('input-error');
+  const next = field.nextElementSibling;
+  if (next && next.classList.contains('field-error')) {
+    next.remove();
+  }
+}
+
+/** Small floating toast used for validation results & confirmations. */
+function showFormToast(message, isSuccess = true) {
+  const existing = document.getElementById('form-toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'form-toast';
+  toast.className = `form-toast ${isSuccess ? 'success' : 'error'}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => toast.classList.add('show'));
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 400);
+  }, 3500);
+}
+
+/* ================================================================
+   FEATURE 1 — WELCOME MESSAGE (index.html)
+   ================================================================ */
+function initWelcomeMessage() {
+  const heroContent = document.querySelector('.hero-content');
+  const searchBar = document.querySelector('.search-bar');
+  if (!heroContent || !searchBar) return; // only exists on the Home page
+
+  const STORAGE_KEY = 'zooro_visitor_name';
+  let name = localStorage.getItem(STORAGE_KEY);
+
+  if (!name) {
+    const entered = window.prompt("👋 Welcome to Zooro Kenya! What's your name?");
+    name = entered && entered.trim() ? entered.trim() : '';
+    localStorage.setItem(STORAGE_KEY, name);
+  }
+
+  const greeting = name
+    ? `Welcome back, <strong>${escapeHTML(name)}</strong>! Ready to find your next home in Nairobi?`
+    : `Welcome to Zooro Kenya! Ready to find your next home in Nairobi?`;
+
+  const banner = document.createElement('div');
+  banner.className = 'js-welcome-banner';
+  banner.innerHTML = `
+    <span>👋 ${greeting}</span>
+    ${name ? `<button type="button" id="reset-name-btn">Not ${escapeHTML(name)}?</button>` : ''}
+  `;
+  heroContent.insertBefore(banner, searchBar);
+
+  const resetBtn = document.getElementById('reset-name-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    });
+  }
+}
+
+/* Quick validation for the homepage search bar (empty search is blocked) */
+function initHomeSearchValidation() {
+  const searchForm = document.querySelector('.search-bar');
+  if (!searchForm) return;
+
+  searchForm.addEventListener('submit', (e) => {
+    const input = searchForm.querySelector('input[name="area"]');
+    if (!input.value.trim()) {
+      e.preventDefault();
+      input.classList.add('input-error');
+      const original = input.placeholder;
+      input.placeholder = 'Please type an area first...';
+      input.focus();
+      setTimeout(() => {
+        input.classList.remove('input-error');
+        input.placeholder = original;
+      }, 1800);
+    }
+  });
+}
+
+/* ================================================================
+   FEATURE 2 — FORM VALIDATION
+   ================================================================ */
+
+/* "Post a House" form (post.html) */
+function initPostForm() {
+  const nameField = document.getElementById('landlord-name');
+  if (!nameField) return; // only exists on post.html
+  const form = nameField.closest('form');
+  form.noValidate = true; // hand validation fully to JS
+
+  const requiredIds = ['landlord-name', 'phone', 'location', 'house-type', 'rent', 'available-from'];
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let isValid = true;
+
+    requiredIds.forEach((id) => {
+      const field = document.getElementById(id);
+      clearFieldError(field);
+      if (!field.value.trim()) {
+        showFieldError(field, 'This field is required.');
+        isValid = false;
+      }
+    });
+
+    const phone = document.getElementById('phone');
+    if (phone.value.trim() && !/^\+?[\d\s-]{7,16}$/.test(phone.value.trim())) {
+      showFieldError(phone, 'Enter a valid phone number.');
+      isValid = false;
+    }
+
+    const rent = document.getElementById('rent');
+    if (rent.value && Number(rent.value) < 1000) {
+      showFieldError(rent, 'Rent should be at least KSh 1,000.');
+      isValid = false;
+    }
+
+    const availableFrom = document.getElementById('available-from');
+    if (availableFrom.value) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (new Date(availableFrom.value) < today) {
+        showFieldError(availableFrom, 'Date cannot be in the past.');
+        isValid = false;
+      }
+    }
+
+    if (!isValid) {
+      showFormToast('Please fix the errors highlighted below.', false);
+      form.querySelector('.input-error')?.focus();
+      return;
+    }
+
+    showFormToast("🎉 Listing submitted! We'll publish it within 24 hours.", true);
+    form.reset();
+  });
+
+  requiredIds.forEach((id) => {
+    const field = document.getElementById(id);
+    field.addEventListener('input', () => clearFieldError(field));
+    field.addEventListener('change', () => clearFieldError(field));
+  });
+}
+
+/* "Contact Us" form (contact.html) */
+function initContactForm() {
+  const emailField = document.getElementById('email');
+  if (!emailField) return; // only exists on contact.html
+  const form = emailField.closest('form');
+  form.noValidate = true;
+
+  const requiredIds = ['name', 'email', 'message'];
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let isValid = true;
+
+    requiredIds.forEach((id) => {
+      const field = document.getElementById(id);
+      clearFieldError(field);
+      if (!field.value.trim()) {
+        showFieldError(field, 'This field is required.');
+        isValid = false;
+      }
+    });
+
+    if (emailField.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailField.value.trim())) {
+      showFieldError(emailField, 'Enter a valid email address.');
+      isValid = false;
+    }
+
+    const agree = form.querySelector('input[name="agree"]');
+    const agreeLabel = agree.closest('.checkbox-label');
+    const oldAgreeError = agreeLabel.parentElement.querySelector('.field-error');
+    if (oldAgreeError) oldAgreeError.remove();
+    if (!agree.checked) {
+      const error = document.createElement('span');
+      error.className = 'field-error';
+      error.textContent = 'Please confirm you agree to be contacted.';
+      agreeLabel.insertAdjacentElement('afterend', error);
+      isValid = false;
+    }
+
+    if (!isValid) {
+      showFormToast('Please fix the errors highlighted below.', false);
+      return;
+    }
+
+    showFormToast("✅ Message sent! We'll get back to you within 24 hours.", true);
+    form.reset();
+  });
+
+  requiredIds.forEach((id) => {
+    const field = document.getElementById(id);
+    field.addEventListener('input', () => clearFieldError(field));
+  });
+}
+
+/* ================================================================
+   FEATURE 3 — DYNAMIC CONTENT
+   ================================================================ */
+
+/* Gallery: heart button on each flip-card, saved to localStorage */
+function initGalleryFavorites() {
+  const galleryGrid = document.querySelector('.gallery-grid');
+  if (!galleryGrid) return; // only exists on gallery.html
+
+  const STORAGE_KEY = 'zooro_favorites';
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+  const galleryHero = document.querySelector('.gallery-hero');
+  const counter = document.createElement('p');
+  counter.className = 'favorites-counter';
+  galleryHero?.appendChild(counter);
+
+  function updateCounter() {
+    const count = galleryGrid.querySelectorAll('.favorite-btn.active').length;
+    counter.textContent = count > 0
+      ? `❤️ You've saved ${count} propert${count === 1 ? 'y' : 'ies'}`
+      : '🤍 Tap the heart on a card to save it';
+  }
+
+  Array.from(galleryGrid.querySelectorAll('.flip-card')).forEach((card, index) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'favorite-btn';
+    btn.setAttribute('aria-label', 'Save to favourites');
+    btn.textContent = '♡';
+
+    if (saved.includes(index)) {
+      btn.classList.add('active');
+      btn.textContent = '❤️';
+    }
+
+    card.appendChild(btn);
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      btn.classList.toggle('active');
+      btn.textContent = btn.classList.contains('active') ? '❤️' : '♡';
+
+      const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const pos = current.indexOf(index);
+      if (btn.classList.contains('active') && pos === -1) current.push(index);
+      if (!btn.classList.contains('active') && pos > -1) current.splice(pos, 1);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+
+      updateCounter();
+    });
+  });
+
+  updateCounter();
+}
+
+/* Listings: "View Details" expands an extra info panel per card */
+function initListingsExpand() {
+  const grid = document.querySelector('.listings-grid');
+  const isListingsPage = document.querySelector('.filter-bar');
+  if (!grid || !isListingsPage) return; // only exists on listings.html
+
+  grid.querySelectorAll('.listing-card').forEach((card) => {
+    const link = card.querySelector('.btn-view');
+    if (!link) return;
+
+    const panel = document.createElement('div');
+    panel.className = 'details-panel';
+    panel.innerHTML = `<p>📍 Contact the landlord directly through Zooro to arrange a viewing.
+      Deposit and utility terms vary by property — always confirm before paying anything.</p>`;
+    card.querySelector('.listing-card-body').appendChild(panel);
+
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isOpen = panel.classList.toggle('open');
+      link.textContent = isOpen ? 'Hide Details ↑' : 'View Details →';
+    });
+  });
+}
+
+/* Listings: filter bar re-filters the grid live, no page reload */
+function initListingsLiveFilter() {
+  const filterForm = document.querySelector('.filter-bar');
+  const grid = document.querySelector('.listings-grid');
+  if (!filterForm || !grid) return; // only exists on listings.html
+
+  const locationSelect = document.getElementById('location');
+  const priceSelect = document.getElementById('price');
+  const typeSelect = document.getElementById('type');
+  const cards = Array.from(grid.querySelectorAll('.listing-card'));
+
+  const countEl = document.createElement('p');
+  countEl.className = 'filter-results-count';
+  grid.parentNode.insertBefore(countEl, grid);
+
+  function priceInRange(price, rangeLabel) {
+    if (!rangeLabel) return true;
+    if (rangeLabel.includes('Under')) return price < 10000;
+    if (rangeLabel.includes('10,000') && rangeLabel.includes('20,000')) return price >= 10000 && price <= 20000;
+    if (rangeLabel.includes('20,000') && rangeLabel.includes('40,000')) return price >= 20000 && price <= 40000;
+    if (rangeLabel.includes('40,000+')) return price > 40000;
+    return true;
+  }
+
+  function applyFilters() {
+    const loc = locationSelect.value;
+    const priceRange = priceSelect.value;
+    const type = typeSelect.value;
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const heading = card.querySelector('h3')?.textContent || '';
+      const tag = card.querySelector('.listing-tag')?.textContent.trim() || '';
+      const priceText = card.querySelector('.listing-price')?.textContent || '';
+      const priceNum = parseInt(priceText.replace(/[^\d]/g, ''), 10) || 0;
+
+      const matchesLocation = !loc || heading.includes(loc);
+      const matchesType = !type || tag === type;
+      const matchesPrice = priceInRange(priceNum, priceRange);
+      const visible = matchesLocation && matchesType && matchesPrice;
+
+      card.style.display = visible ? '' : 'none';
+      if (visible) visibleCount++;
+    });
+
+    countEl.textContent = `Showing ${visibleCount} of ${cards.length} listings`;
+  }
+
+  filterForm.addEventListener('submit', (e) => e.preventDefault());
+  [locationSelect, priceSelect, typeSelect].forEach((select) => {
+    select.addEventListener('change', applyFilters);
+  });
+
+  applyFilters();
+}
+
+/* ================================================================
+   BONUS — SITE-WIDE POLISH (not required, adds general functionality)
+   ================================================================ */
+
+/* Dark mode toggle, added into the nav on every page */
+function initThemeToggle() {
+  const navLinks = document.querySelector('.nav-links');
+  if (!navLinks) return;
+
+  const li = document.createElement('li');
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.id = 'theme-toggle-btn';
+  btn.setAttribute('aria-label', 'Toggle dark mode');
+  li.appendChild(btn);
+  navLinks.appendChild(li);
+
+  const STORAGE_KEY = 'zooro_theme';
+
+  function applyTheme(isDark) {
+    document.body.classList.toggle('dark-theme', isDark);
+    btn.textContent = isDark ? '☀️' : '🌙';
+  }
+
+  applyTheme(localStorage.getItem(STORAGE_KEY) === 'dark');
+
+  btn.addEventListener('click', () => {
+    const isDark = !document.body.classList.contains('dark-theme');
+    applyTheme(isDark);
+    localStorage.setItem(STORAGE_KEY, isDark ? 'dark' : 'light');
+  });
+}
+
+/* Floating back-to-top button, added on every page */
+function initBackToTop() {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.id = 'back-to-top';
+  btn.setAttribute('aria-label', 'Back to top');
+  btn.textContent = '↑';
+  document.body.appendChild(btn);
+
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('show', window.scrollY > 400);
+  });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
