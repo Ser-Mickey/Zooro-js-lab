@@ -1,107 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zooro | Smart Web Solutions</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Link External JavaScript with defer -->
-    <script src="script.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zooro — Find Your Home in Nairobi</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-    <!-- Header Navigation -->
-    <header class="navbar">
-        <div class="logo">Zooro<span>.</span></div>
-        <nav>
-            <a href="index.html" class="active">Home</a>
-            <a href="#services">Services</a>
-            <a href="#contact">Contact</a>
-        </nav>
-        <button id="theme-toggle-btn" class="theme-btn">🌙 Dark Mode</button>
-    </header>
+  <!-- NAVIGATION -->
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">🏠</span> Zooro<span>Kenya</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="listings.html">Listings</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="post.html" class="nav-cta">Post a House</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
 
-    <!-- Welcome Banner (Rubric Feature 1) -->
-    <section class="banner-section">
-        <div id="welcome-banner" class="welcome-box">
-            <!-- Dynamic JS Welcome Message renders here -->
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-content">
+      <h1>Find Your Perfect Home<br/>in <span>Nairobi</span></h1>
+      <p>Thousands of verified listings across Westlands, Kilimani, Kahawa West, and more.</p>
+      <form class="search-bar" action="listings.html" method="get">
+        <input type="text" name="area" placeholder="Search by area e.g. Langata, Kilimani..." />
+        <button type="submit">Search</button>
+      </form>
+    </div>
+  </header>
+
+  <!-- FEATURED LISTINGS -->
+  <section>
+    <h2 class="section-title">Featured Listings</h2>
+    <p class="section-subtitle">Hand-picked properties updated daily</p>
+    <div class="listings-grid">
+
+      <article class="listing-card">
+        <img src="house2.1.png" alt="2 bedroom house in Westlands" />
+        <div class="listing-card-body">
+          <span class="listing-tag">Apartment</span>
+          <h3>2 Bedroom — Westlands</h3>
+          <p class="listing-price">KSh 25,000 <span>/ month</span></p>
+          <ul class="listing-features">
+            <li>Parking</li>
+            <li>Security</li>
+            <li>Water 24/7</li>
+          </ul>
+          <a href="listings.html" class="btn-view">View Listing →</a>
         </div>
-    </section>
+      </article>
 
-    <!-- Main Hero Section -->
-    <main class="container">
-        <section class="hero">
-            <h1>Innovative Digital Experience</h1>
-            <p>Empowering businesses with custom interactive web platforms.</p>
-        </section>
+      <article class="listing-card">
+        <img src="house4.png" alt="Studio apartment near South B" />
+        <div class="listing-card-body">
+          <span class="listing-tag">Studio</span>
+          <h3>Studio — Nairobi West</h3>
+          <p class="listing-price">KSh 12,000 <span>/ month</span></p>
+          <ul class="listing-features">
+            <li>Near South B</li>
+            <li>WiFi Ready</li>
+          </ul>
+          <a href="listings.html" class="btn-view">View Listing →</a>
+        </div>
+      </article>
 
-        <!-- Dynamic Services Section (Rubric Feature 3) -->
-        <section id="services" class="services-section">
-            <h2>Our Core Services</h2>
-            <p>Click any card to select a service:</p>
+      <article class="listing-card">
+        <img src="house3.png" alt="3 bedroom in Kahawa West" />
+        <div class="listing-card-body">
+          <span class="listing-tag">Family Home</span>
+          <h3>3 Bedroom — Kahawa West</h3>
+          <p class="listing-price">KSh 45,000 <span>/ month</span></p>
+          <ul class="listing-features">
+            <li>Garden</li>
+            <li>Borehole</li>
+            <li>DSQ</li>
+          </ul>
+          <a href="listings.html" class="btn-view">View Listing →</a>
+        </div>
+      </article>
 
-            <div id="selection-status" class="selection-status" style="display: none;"></div>
+    </div>
+    <div style="text-align:center; margin-top:2rem;">
+      <a href="listings.html" class="btn-primary">View All Available Listings →</a>
+    </div>
+  </section>
 
-            <div class="cards-grid">
-                <!-- Service Card 1 -->
-                <div class="card interactive-card">
-                    <h3>Web Development</h3>
-                    <p>Modern responsive websites crafted for optimal usability and performance.</p>
-                    <button class="toggle-details-btn" data-target="info-1">Read More ▼</button>
-                    <div id="info-1" class="extra-info hidden">
-                        <p><strong>Includes:</strong> HTML5, CSS3, ES6 JavaScript, responsive design, and SEO optimization.</p>
-                    </div>
-                </div>
+  <!-- WHY ZOORO -->
+  <div class="features-section">
+    <div class="features-inner">
+      <h2 class="section-title">Why Choose Zooro?</h2>
+      <p class="section-subtitle">We make finding a home in Nairobi simple and stress-free</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">✅</div>
+          <h4>Verified Landlords Only</h4>
+          <p>Every landlord on Zooro is vetted before their listings go live.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🚫</div>
+          <h4>No Agent Fees</h4>
+          <p>Connect directly with landlords — no middlemen, no hidden charges.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📅</div>
+          <h4>New Listings Daily</h4>
+          <p>Fresh properties added every day across all Nairobi estates.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🗺️</div>
+          <h4>All Nairobi Estates</h4>
+          <p>From Westlands to Kahawa West, we cover every neighbourhood.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-                <!-- Service Card 2 -->
-                <div class="card interactive-card">
-                    <h3>UI/UX Architecture</h3>
-                    <p>User-first interfaces focused on conversions, seamless navigation, and accessibility.</p>
-                    <button class="toggle-details-btn" data-target="info-2">Read More ▼</button>
-                    <div id="info-2" class="extra-info hidden">
-                        <p><strong>Includes:</strong> Wireframing, prototyping, user journey mapping, and visual styling.</p>
-                    </div>
-                </div>
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="nav-logo">🏠 Zooro<span style="color:var(--gold)">Kenya</span></div>
+        <p>Your trusted platform for finding verified rental homes across Nairobi's finest estates.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Navigate</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="listings.html">Listings</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="post.html">Post a House</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="mailto:hello@zooro.co.ke">hello@zooro.co.ke</a></li>
+          <li><a href="tel:+254700111000">+254 700 111 000</a></li>
+          <li><span>Nairobi, Kenya</span></li>
+          <li><span>Mon–Fri, 8am–6pm</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Zooro Kenya. All rights reserved.</span>
+      <div style="display:flex;gap:1.5rem;">
+        <a href="index.html">Home</a>
+        <a href="listings.html">Listings</a>
+        <a href="post.html">Post</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
 
-                <!-- Service Card 3 -->
-                <div class="card interactive-card">
-                    <h3>Database Systems</h3>
-                    <p>Secure database architecture integrated seamlessly with modern server engines.</p>
-                    <button class="toggle-details-btn" data-target="info-3">Read More ▼</button>
-                    <div id="info-3" class="extra-info hidden">
-                        <p><strong>Includes:</strong> MySQL database design, RESTful APIs, and cloud hosting setups.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Form Validation Section (Rubric Feature 2) -->
-        <section id="contact" class="contact-section">
-            <h2>Get In Touch</h2>
-            <form id="contact-form" novalidate>
-                <div class="form-group">
-                    <label for="fullname">Full Name *</label>
-                    <input type="text" id="fullname" name="fullname" placeholder="Enter your name">
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" name="email" placeholder="e.g. victor@example.com">
-                </div>
-
-                <div class="form-group">
-                    <label for="message">Your Message *</label>
-                    <textarea id="message" name="message" rows="4" placeholder="How can we help you?"></textarea>
-                </div>
-
-                <button type="submit" class="submit-btn">Send Message</button>
-            </form>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2026 Zooro Lab Project. Built by Victor for Web Development Assignment.</p>
-    </footer>
-
+  <script src="script.js" defer></script>
 </body>
 </html>
