@@ -1345,3 +1345,75 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   font-weight: 500;
 }
  
+/* ============================================
+   POST/HUNT TOGGLE (post.html)
+   ============================================ */
+.page-eyebrow {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  color: var(--gold);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.35rem 0.9rem;
+  border-radius: 50px;
+  margin-bottom: 0.8rem;
+}
+
+.form-toggle {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 720px;
+  margin: 0 auto 1.8rem;
+}
+
+.toggle-tab {
+  flex: 1;
+  padding: 1rem 1.2rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-mid);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+}
+
+.toggle-tab:hover {
+  border-color: var(--green-mid);
+  color: var(--green-dark);
+}
+
+.toggle-tab.active {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.form-panel.hidden {
+  display: none;
+}
+
+.hunt-badge {
+  display: inline-block;
+  background: var(--green-pale);
+  color: var(--green-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+  margin-bottom: 0.7rem;
+}
+
+.optional-tag {
+  color: var(--text-light);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
