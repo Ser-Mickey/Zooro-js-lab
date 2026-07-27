@@ -2,15 +2,17 @@
    ZOORO KENYA — script.js
    JavaScript Lab | Web Application Development
    ------------------------------------------------------------
-  * Victor Nyagah
-  * Student No: 165080
-  * BBIT, Web Application Project
+   * Victor Nyagah
+   * Student No: 165080
+   * BBIT, Web Application Project
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
   initWelcomeMessage();     // Feature 1: personalised welcome (Home)
   initHomeSearchValidation();
   initPostForm();           // Feature 2: form validation (Post a House)
+  initHuntForm();           // Feature 2: form validation (House Hunt Request)
+  initFormToggle();         // Dynamic content: List a Property / Request a House Hunt tabs
   initContactForm();        // Feature 2: form validation (Contact)
   initGalleryFavorites();   // Feature 3: dynamic content (Gallery)
   initListingsExpand();     // Feature 3: dynamic content (Listings)
@@ -190,6 +192,81 @@ function initPostForm() {
     field.addEventListener('input', () => clearFieldError(field));
     field.addEventListener('change', () => clearFieldError(field));
   });
+}
+
+/* "Request a House Hunt" form (post.html, tenant side) */
+function initHuntForm() {
+  const nameField = document.getElementById('hunt-name');
+  if (!nameField) return; // only exists on post.html
+  const form = nameField.closest('form');
+  form.noValidate = true;
+
+  const requiredIds = ['hunt-name', 'hunt-phone', 'hunt-location', 'hunt-house-type', 'hunt-budget', 'hunt-timeframe'];
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let isValid = true;
+
+    requiredIds.forEach((id) => {
+      const field = document.getElementById(id);
+      clearFieldError(field);
+      if (!field.value.trim()) {
+        showFieldError(field, 'This field is required.');
+        isValid = false;
+      }
+    });
+
+    const phone = document.getElementById('hunt-phone');
+    if (phone.value.trim() && !/^\+?[\d\s-]{7,16}$/.test(phone.value.trim())) {
+      showFieldError(phone, 'Enter a valid phone number.');
+      isValid = false;
+    }
+
+    if (!isValid) {
+      showFormToast('Please fix the errors highlighted below.', false);
+      form.querySelector('.input-error')?.focus();
+      return;
+    }
+
+    showFormToast('🔍 Request received! A Zooro scout will start searching and reach out within 24 hours.', true);
+    form.reset();
+  });
+
+  requiredIds.forEach((id) => {
+    const field = document.getElementById(id);
+    field.addEventListener('input', () => clearFieldError(field));
+    field.addEventListener('change', () => clearFieldError(field));
+  });
+}
+
+/* Toggle between "List a Property" and "Request a House Hunt" (post.html) */
+function initFormToggle() {
+  const tabLandlord = document.getElementById('tab-landlord');
+  const tabHunt = document.getElementById('tab-hunt');
+  const panelLandlord = document.getElementById('panel-landlord');
+  const panelHunt = document.getElementById('panel-hunt');
+  if (!tabLandlord || !tabHunt || !panelLandlord || !panelHunt) return; // only exists on post.html
+
+  function showLandlord() {
+    panelLandlord.classList.remove('hidden');
+    panelHunt.classList.add('hidden');
+    tabLandlord.classList.add('active');
+    tabHunt.classList.remove('active');
+    tabLandlord.setAttribute('aria-selected', 'true');
+    tabHunt.setAttribute('aria-selected', 'false');
+  }
+
+  function showHunt() {
+    panelHunt.classList.remove('hidden');
+    panelLandlord.classList.add('hidden');
+    tabHunt.classList.add('active');
+    tabLandlord.classList.remove('active');
+    tabHunt.setAttribute('aria-selected', 'true');
+    tabLandlord.setAttribute('aria-selected', 'false');
+  }
+
+  tabLandlord.addEventListener('click', showLandlord);
+  tabHunt.addEventListener('click', showHunt);
 }
 
 /* "Contact Us" form (contact.html) */
