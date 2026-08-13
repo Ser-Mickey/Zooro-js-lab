@@ -15,10 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initFormToggle();         // Dynamic content: List a Property / Request a House Hunt tabs
   initFileUploadPreview();  // Responsive file upload indicator (Post a House)
   initContactForm();        // Feature 2: form validation (Contact)
-  initGalleryFavorites();   // Feature 3: dynamic content (Gallery)
+  initGalleryFavorites();   // Feature 3: dynamic content (Gallery & Listings Shortlist)
   initListingsExpand();     // Feature 3: dynamic content (Listings)
   initListingsLiveFilter(); // Feature 3: dynamic content (Listings)
-  initShortlistDrawer();    // Feature: My Shortlist slide-out drawer (Cart alternative)
+  initShortlistDrawer();    // Feature: My Shortlist slide-out drawer
   initThemeToggle();        // Bonus: site-wide dark mode
   initBackToTop();          // Bonus: site-wide back-to-top button
 });
@@ -424,14 +424,14 @@ function initContactForm() {
    FEATURE 3 — DYNAMIC CONTENT & MY SHORTLIST
    ================================================================ */
 
-/* Gallery: heart button on each flip-card, saved to localStorage */
+/* Gallery & Listings: Heart button on each card, saving exact title + price to localStorage */
 function initGalleryFavorites() {
-  const galleryGrid = document.querySelector('.gallery-grid');
-  if (!galleryGrid) return;
+  const cardsContainer = document.querySelector('.gallery-grid') || document.querySelector('.listings-grid');
+  if (!cardsContainer) return;
 
   const STORAGE_KEY = 'zooro_shortlist_items';
 
-  const galleryHero = document.querySelector('.gallery-hero');
+  const galleryHero = document.querySelector('.gallery-hero') || document.querySelector('.listings-hero');
   const counter = document.createElement('p');
   counter.className = 'favorites-counter';
   galleryHero?.appendChild(counter);
@@ -445,7 +445,7 @@ function initGalleryFavorites() {
 
   function syncCardStates() {
     const savedItems = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    galleryGrid.querySelectorAll('.favorite-btn').forEach((btn) => {
+    document.querySelectorAll('.favorite-btn').forEach((btn) => {
       const itemId = btn.getAttribute('data-id');
       const isSaved = savedItems.some(item => item.id === itemId);
       if (isSaved) {
@@ -459,23 +459,32 @@ function initGalleryFavorites() {
     updateCounter();
   }
 
-  Array.from(galleryGrid.querySelectorAll('.flip-card')).forEach((card, index) => {
+  const allCards = Array.from(document.querySelectorAll('.flip-card, .listing-card'));
+
+  allCards.forEach((card, index) => {
     // 1. Dynamic Title Extraction
-    const titleEl = card.querySelector('h3') || card.querySelector('h4') || card.querySelector('.card-title');
+    const titleEl = card.querySelector('h3') || card.querySelector('h4') || card.querySelector('.card-title') || card.querySelector('.listing-title');
     const title = titleEl ? titleEl.textContent.trim() : `Property #${index + 1}`;
 
-    // 2. Dynamic Price Extraction (checks multiple selectors & searches for 'KSh')
+    // 2. Dynamic Price Extraction (Consistently captures exact listed price)
     let price = '';
-    const priceEl = card.querySelector('.price') || card.querySelector('.listing-price') || card.querySelector('.card-price');
+    const priceSelectors = ['.price', '.listing-price', '.card-price', '.property-price'];
     
-    if (priceEl) {
-      price = priceEl.textContent.trim();
-    } else {
-      // Scrape any element inside the card containing currency indicators
+    for (const selector of priceSelectors) {
+      const el = card.querySelector(selector);
+      if (el && el.textContent.trim()) {
+        price = el.textContent.trim();
+        break;
+      }
+    }
+
+    // Fallback search inside card elements for currency indicators
+    if (!price) {
       const candidates = card.querySelectorAll('p, span, div, h4, strong');
       for (const el of candidates) {
-        if (el.children.length === 0 && (el.textContent.includes('KSh') || el.textContent.includes('/ month'))) {
-          price = el.textContent.trim();
+        const text = el.textContent.trim();
+        if (el.children.length === 0 && (text.includes('KSh') || text.includes('/ month') || text.includes('/mo'))) {
+          price = text;
           break;
         }
       }
@@ -485,15 +494,18 @@ function initGalleryFavorites() {
 
     // 3. Image Extraction
     const img = card.querySelector('img')?.src || 'assets/images/placeholder.jpg';
-    const itemId = `gallery-${index}`;
+    const itemId = `listing-${index}`;
 
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'favorite-btn';
-    btn.setAttribute('data-id', itemId);
-    btn.setAttribute('aria-label', 'Save to shortlist');
-
-    card.appendChild(btn);
+    // Ensure button isn't duplicated
+    let btn = card.querySelector('.favorite-btn');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'favorite-btn';
+      btn.setAttribute('data-id', itemId);
+      btn.setAttribute('aria-label', 'Save to shortlist');
+      card.appendChild(btn);
+    }
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -505,13 +517,13 @@ function initGalleryFavorites() {
         showFormToast('Removed from Shortlist', true);
       } else {
         currentItems.push({ id: itemId, title, price, img });
-        showFormToast('Added to Shortlist!', true);
+        showFormToast(`Added to Shortlist (${price})!`, true);
       }
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(currentItems));
       syncCardStates();
 
-      // Dispatch custom event to notify shortlist drawer live
+      // Dispatch custom event to sync drawer live
       window.dispatchEvent(new Event('shortlistUpdated'));
     });
   });
@@ -520,7 +532,7 @@ function initGalleryFavorites() {
   window.addEventListener('shortlistUpdated', syncCardStates);
 }
 
-/* My Shortlist Slide-out Drawer (Shopping Cart Alternative) */
+/* My Shortlist Slide-out Drawer */
 function initShortlistDrawer() {
   const navLinks = document.querySelector('.nav-links');
   if (!navLinks) return;
@@ -561,7 +573,7 @@ function initShortlistDrawer() {
   const closeBtn = drawer.querySelector('.shortlist-close-btn');
   const actionBtn = drawer.querySelector('#shortlist-action-btn');
 
-  // 3. Render Drawer Items
+  // 3. Render Drawer Items with Exact Listed Price
   function renderShortlist() {
     const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     if (countBadge) countBadge.textContent = items.length;
@@ -586,7 +598,7 @@ function initShortlistDrawer() {
         <img src="${item.img}" alt="${escapeHTML(item.title)}">
         <div class="shortlist-item-info">
           <h4>${escapeHTML(item.title)}</h4>
-          <p>${escapeHTML(item.price)}</p>
+          <p class="shortlist-item-price">${escapeHTML(item.price)}</p>
         </div>
         <button class="shortlist-remove-btn" data-id="${item.id}" aria-label="Remove item">&times;</button>
       </div>
