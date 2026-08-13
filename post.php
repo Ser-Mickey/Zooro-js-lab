@@ -32,7 +32,7 @@ $jurisdiction = $_SESSION['jurisdiction_location'] ?? '';
           <!-- Accent Door/Location Pin element -->
           <circle cx="50" cy="55" r="7" fill="#2563EB" />
         </svg>
-        <span class="brand-name">ooro<span class="brand-dot">.</span></span>
+        <span class="brand-name">Zooro<span class="brand-dot">.</span></span>
       </a>
       <ul class="nav-links">
         <li><a href="index.php">Home</a></li>
