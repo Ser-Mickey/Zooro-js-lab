@@ -424,19 +424,76 @@ function initContactForm() {
    FEATURE 3 — DYNAMIC CONTENT & MY SHORTLIST
    ================================================================ */
 
-/* Gallery & Listings: Heart button on each card, saving exact title + price to localStorage */
+/* Helper function to dynamically extract the exact title from flip cards or listings */
+function extractCardTitle(card, fallbackIndex) {
+  // 1. Search headings in both gallery flip-cards and listing cards
+  const titleSelectors = [
+    '.flip-card-back h3',
+    '.flip-card-front h3',
+    'h3',
+    'h4',
+    '.listing-title',
+    '.card-title',
+    '.property-title'
+  ];
+
+  for (const selector of titleSelectors) {
+    const el = card.querySelector(selector);
+    if (el && el.textContent.trim()) {
+      return el.textContent.trim();
+    }
+  }
+
+  // 2. Search inner text elements for descriptive house titles
+  const candidates = card.querySelectorAll('p, span, div, strong');
+  for (const el of candidates) {
+    const txt = el.textContent.trim();
+    if (el.children.length === 0 && (txt.includes('Bedroom') || txt.includes('Bedsitter') || txt.includes('Studio') || txt.includes('Apartment') || txt.includes('House'))) {
+      return txt;
+    }
+  }
+
+  return `Property Listing #${fallbackIndex + 1}`;
+}
+
+/* Helper function to dynamically extract the exact price from a card */
+function extractCardPrice(card) {
+  const priceSelectors = ['.listing-price', '.price', '.card-price', '.property-price'];
+  for (const selector of priceSelectors) {
+    const el = card.querySelector(selector);
+    if (el && el.textContent.trim()) {
+      return el.textContent.trim();
+    }
+  }
+
+  const candidates = card.querySelectorAll('p, span, div, h4, strong');
+  for (const el of candidates) {
+    const txt = el.textContent.trim();
+    if (el.children.length === 0 && (txt.includes('KSh') || txt.includes('ksh') || txt.includes('/ month'))) {
+      return txt;
+    }
+  }
+
+  return 'Price on Request';
+}
+
+/* Gallery & Listings: Heart button on each card */
 function initGalleryFavorites() {
-  const cardsContainer = document.querySelector('.gallery-grid') || document.querySelector('.listings-grid');
-  if (!cardsContainer) return;
+  const allCards = Array.from(document.querySelectorAll('.flip-card, .listing-card'));
+  if (allCards.length === 0) return;
 
   const STORAGE_KEY = 'zooro_shortlist_items';
 
-  const galleryHero = document.querySelector('.gallery-hero') || document.querySelector('.listings-hero');
-  const counter = document.createElement('p');
-  counter.className = 'favorites-counter';
-  galleryHero?.appendChild(counter);
+  const heroSection = document.querySelector('.gallery-hero') || document.querySelector('.listings-hero');
+  let counter = heroSection?.querySelector('.favorites-counter');
+  if (heroSection && !counter) {
+    counter = document.createElement('p');
+    counter.className = 'favorites-counter';
+    heroSection.appendChild(counter);
+  }
 
   function updateCounter() {
+    if (!counter) return;
     const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     counter.textContent = current.length > 0
       ? `❤️ You've saved ${current.length} propert${current.length === 1 ? 'y' : 'ies'}`
@@ -459,44 +516,10 @@ function initGalleryFavorites() {
     updateCounter();
   }
 
-  const allCards = Array.from(document.querySelectorAll('.flip-card, .listing-card'));
-
   allCards.forEach((card, index) => {
-    // 1. Dynamic Title Extraction
-    const titleEl = card.querySelector('h3') || card.querySelector('h4') || card.querySelector('.card-title') || card.querySelector('.listing-title');
-    const title = titleEl ? titleEl.textContent.trim() : `Property #${index + 1}`;
+    const itemId = `property-${index}`;
 
-    // 2. Dynamic Price Extraction (Consistently captures exact listed price)
-    let price = '';
-    const priceSelectors = ['.price', '.listing-price', '.card-price', '.property-price'];
-    
-    for (const selector of priceSelectors) {
-      const el = card.querySelector(selector);
-      if (el && el.textContent.trim()) {
-        price = el.textContent.trim();
-        break;
-      }
-    }
-
-    // Fallback search inside card elements for currency indicators
-    if (!price) {
-      const candidates = card.querySelectorAll('p, span, div, h4, strong');
-      for (const el of candidates) {
-        const text = el.textContent.trim();
-        if (el.children.length === 0 && (text.includes('KSh') || text.includes('/ month') || text.includes('/mo'))) {
-          price = text;
-          break;
-        }
-      }
-    }
-
-    if (!price) price = 'Price on Request';
-
-    // 3. Image Extraction
-    const img = card.querySelector('img')?.src || 'assets/images/placeholder.jpg';
-    const itemId = `listing-${index}`;
-
-    // Ensure button isn't duplicated
+    // Ensure heart button exists
     let btn = card.querySelector('.favorite-btn');
     if (!btn) {
       btn = document.createElement('button');
@@ -509,21 +532,27 @@ function initGalleryFavorites() {
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
+
+      // DYNAMIC EXTRACTION: Captures exact property name & price directly from the card text
+      const title = extractCardTitle(card, index);
+      const price = extractCardPrice(card);
+      const img = card.querySelector('img')?.src || 'assets/images/placeholder.jpg';
+
       let currentItems = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
       const existingIndex = currentItems.findIndex(item => item.id === itemId);
 
       if (existingIndex > -1) {
         currentItems.splice(existingIndex, 1);
-        showFormToast('Removed from Shortlist', true);
+        showFormToast(`Removed "${title}" from Shortlist`, true);
       } else {
         currentItems.push({ id: itemId, title, price, img });
-        showFormToast(`Added to Shortlist (${price})!`, true);
+        showFormToast(`Saved "${title}" (${price}) to Shortlist!`, true);
       }
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(currentItems));
       syncCardStates();
 
-      // Dispatch custom event to sync drawer live
+      // Broadcast event so shortlist drawer updates in real-time
       window.dispatchEvent(new Event('shortlistUpdated'));
     });
   });
@@ -540,40 +569,48 @@ function initShortlistDrawer() {
   const STORAGE_KEY = 'zooro_shortlist_items';
 
   // 1. Inject Shortlist Nav Button
-  const li = document.createElement('li');
-  const navBtn = document.createElement('button');
-  navBtn.type = 'button';
-  navBtn.id = 'shortlist-nav-btn';
-  navBtn.innerHTML = `❤️ Shortlist <span class="shortlist-badge" id="shortlist-count">0</span>`;
-  li.appendChild(navBtn);
-  navLinks.appendChild(li);
+  let navBtn = document.getElementById('shortlist-nav-btn');
+  if (!navBtn) {
+    const li = document.createElement('li');
+    navBtn = document.createElement('button');
+    navBtn.type = 'button';
+    navBtn.id = 'shortlist-nav-btn';
+    navBtn.innerHTML = `❤️ Shortlist <span class="shortlist-badge" id="shortlist-count">0</span>`;
+    li.appendChild(navBtn);
+    navLinks.appendChild(li);
+  }
 
-  // 2. Inject Backdrop & Drawer HTML into body
-  const overlay = document.createElement('div');
-  overlay.className = 'shortlist-overlay';
+  // 2. Inject Backdrop & Drawer HTML
+  let overlay = document.querySelector('.shortlist-overlay');
+  let drawer = document.querySelector('.shortlist-drawer');
 
-  const drawer = document.createElement('aside');
-  drawer.className = 'shortlist-drawer';
-  drawer.innerHTML = `
-    <div class="shortlist-header">
-      <h3>❤️ My Shortlist</h3>
-      <button class="shortlist-close-btn" aria-label="Close shortlist">&times;</button>
-    </div>
-    <div class="shortlist-body" id="shortlist-body"></div>
-    <div class="shortlist-footer">
-      <button class="btn-shortlist-action" id="shortlist-action-btn">Request Bulk Viewing Tour</button>
-    </div>
-  `;
+  if (!drawer) {
+    overlay = document.createElement('div');
+    overlay.className = 'shortlist-overlay';
 
-  document.body.appendChild(overlay);
-  document.body.appendChild(drawer);
+    drawer = document.createElement('aside');
+    drawer.className = 'shortlist-drawer';
+    drawer.innerHTML = `
+      <div class="shortlist-header">
+        <h3>❤️ My Shortlist</h3>
+        <button class="shortlist-close-btn" aria-label="Close shortlist">&times;</button>
+      </div>
+      <div class="shortlist-body" id="shortlist-body"></div>
+      <div class="shortlist-footer">
+        <button class="btn-shortlist-action" id="shortlist-action-btn">Request Bulk Viewing Tour</button>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(drawer);
+  }
 
   const bodyEl = drawer.querySelector('#shortlist-body');
   const countBadge = navBtn.querySelector('#shortlist-count');
   const closeBtn = drawer.querySelector('.shortlist-close-btn');
   const actionBtn = drawer.querySelector('#shortlist-action-btn');
 
-  // 3. Render Drawer Items with Exact Listed Price
+  // 3. Render Drawer Items with Exact Listed Title and Price
   function renderShortlist() {
     const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     if (countBadge) countBadge.textContent = items.length;
@@ -632,7 +669,7 @@ function initShortlistDrawer() {
 
   navBtn.addEventListener('click', openDrawer);
   if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
-  overlay.addEventListener('click', closeDrawer);
+  if (overlay) overlay.addEventListener('click', closeDrawer);
 
   // Bulk Request Action Button
   if (actionBtn) {
