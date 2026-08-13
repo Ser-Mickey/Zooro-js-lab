@@ -1720,3 +1720,38 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   color: var(--text-light);
   cursor: not-allowed;
 }
+.property-card {
+  position: relative;
+}
+
+.shortlist-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  z-index: 10;
+}
+
+.shortlist-btn:hover {
+  transform: scale(1.1);
+  background: #ffffff;
+}
+
+.shortlist-btn i {
+  color: #64748b;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+}
+
+.shortlist-btn.active i {
+  color: #ef4444; /* Heart turns red when active */
+}
