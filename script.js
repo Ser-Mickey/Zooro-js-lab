@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPostForm();           // Feature 2: form validation (Post a House)
   initHuntForm();           // Feature 2: form validation (House Hunt Request)
   initFormToggle();         // Dynamic content: List a Property / Request a House Hunt tabs
+  initFileUploadPreview();  // Responsive file upload indicator (Post a House)
   initContactForm();        // Feature 2: form validation (Contact)
   initGalleryFavorites();   // Feature 3: dynamic content (Gallery)
   initListingsExpand();     // Feature 3: dynamic content (Listings)
@@ -130,7 +131,7 @@ function initHomeSearchValidation() {
 }
 
 /* ================================================================
-   FEATURE 2 — FORM VALIDATION
+   FEATURE 2 — FORM VALIDATION & PROCESSORS
    ================================================================ */
 
 /* "Post a House" form (post.html) */
@@ -183,8 +184,8 @@ function initPostForm() {
       return;
     }
 
-    showFormToast("🎉 Listing submitted! We'll publish it within 24 hours.", true);
-    form.reset();
+    // Submit validated data to process_listing.php
+    form.submit();
   });
 
   requiredIds.forEach((id) => {
@@ -228,8 +229,8 @@ function initHuntForm() {
       return;
     }
 
-    showFormToast('🔍 Request received! A Zooro scout will start searching and reach out within 24 hours.', true);
-    form.reset();
+    // Submit validated data to process_hunt.php
+    form.submit();
   });
 
   requiredIds.forEach((id) => {
@@ -267,6 +268,27 @@ function initFormToggle() {
 
   tabLandlord.addEventListener('click', showLandlord);
   tabHunt.addEventListener('click', showHunt);
+}
+
+/* Displays selected photo file name on post.html */
+function initFileUploadPreview() {
+  const photoInput = document.getElementById('photo-upload');
+  if (!photoInput) return;
+
+  photoInput.addEventListener('change', (e) => {
+    const uploadArea = e.target.closest('.file-upload-area');
+    if (!uploadArea) return;
+    const textElement = uploadArea.querySelector('p');
+
+    if (e.target.files && e.target.files.length > 0) {
+      const fileName = e.target.files[0].name;
+      if (textElement) textElement.textContent = `Selected File: ${fileName}`;
+      uploadArea.style.borderColor = '#10b981';
+    } else {
+      if (textElement) textElement.textContent = 'Choose file or drag and drop here';
+      uploadArea.style.borderColor = '#cbd5e1';
+    }
+  });
 }
 
 /* "Contact Us" form (contact.html) */
