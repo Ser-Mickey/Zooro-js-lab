@@ -157,13 +157,14 @@ nav {
 }
 
 .nav-links a.nav-cta::after { display: none; }
+
 /* --- Brand Logo Styling --- */
 .brand-logo {
   display: flex;
   align-items: center;
   gap: 10px;
   text-decoration: none;
-  font-family: 'Poppins', 'Inter', sans-serif;
+  font-family: 'Outfit', 'Inter', sans-serif;
   transition: opacity 0.2s ease;
 }
 
@@ -178,18 +179,18 @@ nav {
 }
 
 .brand-logo:hover .logo-svg {
-  transform: translateY(-2px) scale(1.05); /* Soft spring hover lift */
+  transform: translateY(-2px) scale(1.05);
 }
 
 .brand-name {
   font-size: 1.6rem;
   font-weight: 800;
-  color: #0F172A; /* Slate navy */
+  color: #FFFFFF;
   letter-spacing: -0.5px;
 }
 
 .brand-dot {
-  color: #10B981; /* Matches emerald accent */
+  color: var(--gold);
 }
 
 /* ============================================
@@ -831,7 +832,7 @@ section {
 }
 
 /* ============================================
-   GALLERY PAGE — CSS Flip Cards (SIGNATURE)
+   GALLERY PAGE — CSS Flip Cards
    ============================================ */
 .gallery-hero {
   background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
@@ -862,11 +863,11 @@ section {
   margin: 0 auto;
 }
 
-/* Flip Card */
 .flip-card {
   height: 320px;
   perspective: 1000px;
   cursor: pointer;
+  position: relative;
 }
 
 .flip-card-inner {
@@ -891,7 +892,6 @@ section {
   overflow: hidden;
 }
 
-/* Front */
 .flip-card-front {
   background: var(--bg-card);
   box-shadow: var(--shadow-sm);
@@ -921,7 +921,6 @@ section {
   color: var(--text-light);
 }
 
-/* Back */
 .flip-card-back {
   background: linear-gradient(145deg, var(--green-dark), var(--green-main));
   transform: rotateY(180deg);
@@ -1162,12 +1161,10 @@ footer {
   outline-offset: 3px;
 }
 
-
 /* ============================================
    JAVASCRIPT LAB ENHANCEMENTS
-   (styles for elements created by script.js)
    ============================================ */
- 
+
 /* --- Welcome banner (Home) --- */
 .js-welcome-banner {
   display: flex;
@@ -1184,9 +1181,9 @@ footer {
   font-size: 0.92rem;
   animation: fadeSlideDown 0.5s ease;
 }
- 
+
 .js-welcome-banner strong { color: var(--gold); }
- 
+
 .js-welcome-banner button {
   background: transparent;
   border: 1px solid rgba(255,255,255,0.4);
@@ -1198,19 +1195,19 @@ footer {
   transition: var(--transition);
   white-space: nowrap;
 }
- 
+
 .js-welcome-banner button:hover {
   background: var(--gold);
   color: var(--green-dark);
   border-color: var(--gold);
 }
- 
+
 @keyframes fadeSlideDown {
   from { opacity: 0; transform: translateY(-10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
- 
-/* --- Theme toggle button (all pages) --- */
+
+/* --- Theme toggle button --- */
 #theme-toggle-btn {
   background: rgba(255,255,255,0.1);
   border: 1px solid rgba(255,255,255,0.25);
@@ -1225,14 +1222,14 @@ footer {
   justify-content: center;
   transition: var(--transition);
 }
- 
+
 #theme-toggle-btn:hover {
   background: var(--gold);
   border-color: var(--gold);
   transform: rotate(20deg);
 }
- 
-/* --- Dark theme: reuses the same design tokens the CSS lab defined --- */
+
+/* --- Dark theme --- */
 body.dark-theme {
   --bg:         #0F1A15;
   --bg-card:    #17261F;
@@ -1241,14 +1238,14 @@ body.dark-theme {
   --text-light: #8AA398;
   --border:     #2A3B33;
 }
- 
+
 body.dark-theme .listing-tag { background: rgba(149,213,178,0.15); }
 body.dark-theme .form-group input,
 body.dark-theme .form-group select,
 body.dark-theme .form-group textarea { background: #10201A; color: var(--text-dark); }
 body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.03); }
- 
-/* --- Back-to-top button (all pages) --- */
+
+/* --- Back-to-top button --- */
 #back-to-top {
   position: fixed;
   right: 1.5rem;
@@ -1269,21 +1266,21 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   transition: var(--transition);
   z-index: 999;
 }
- 
+
 #back-to-top.show {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
 }
- 
+
 #back-to-top:hover { background: var(--gold-dark); transform: translateY(-3px); }
- 
-/* --- Form validation states (Post a House / Contact) --- */
+
+/* --- Form validation states --- */
 .input-error {
   border-color: #D64545 !important;
   box-shadow: 0 0 0 3px rgba(214,69,69,0.12) !important;
 }
- 
+
 .field-error {
   display: block;
   color: #D64545;
@@ -1292,7 +1289,7 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   font-weight: 500;
   animation: fadeSlideDown 0.25s ease;
 }
- 
+
 /* --- Toast confirmation messages --- */
 .form-toast {
   position: fixed;
@@ -1307,22 +1304,20 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   font-size: 0.92rem;
   font-weight: 500;
   opacity: 0;
-  z-index: 2000;
+  z-index: 200000;
   transition: var(--transition);
   max-width: 90vw;
   text-align: center;
 }
- 
+
 .form-toast.error { background: #B23A3A; }
- 
+
 .form-toast.show {
   opacity: 1;
   transform: translate(-50%, 0);
 }
- 
+
 /* --- Gallery favourite button --- */
-.flip-card { position: relative; }
- 
 .favorite-btn {
   position: absolute;
   top: 10px;
@@ -1331,27 +1326,27 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   height: 36px;
   border-radius: 50%;
   border: none;
-  background: rgba(27,67,50,0.55);
+  background: rgba(27,67,50,0.75);
   color: #fff;
   font-size: 1.1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
+  z-index: 10;
   transition: var(--transition);
 }
- 
-.favorite-btn:hover { background: rgba(27,67,50,0.85); transform: scale(1.1); }
-.favorite-btn.active { color: #FF5C5C; background: #fff; }
- 
+
+.favorite-btn:hover { background: rgba(27,67,50,0.95); transform: scale(1.1); }
+.favorite-btn.active { color: #FF5C5C; background: #fff; box-shadow: var(--shadow-sm); }
+
 .favorites-counter {
   margin-top: 0.8rem;
   font-size: 0.92rem;
   color: rgba(255,255,255,0.75);
   font-weight: 500;
 }
- 
+
 /* --- Listings: expandable details panel --- */
 .details-panel {
   max-height: 0;
@@ -1362,7 +1357,7 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   color: var(--text-mid);
   line-height: 1.5;
 }
- 
+
 .details-panel.open {
   max-height: 200px;
   opacity: 1;
@@ -1370,7 +1365,7 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   padding-top: 0.8rem;
   border-top: 1px dashed var(--border);
 }
- 
+
 /* --- Listings: live filter result count --- */
 .filter-results-count {
   margin: -0.5rem 0 1.5rem;
@@ -1378,7 +1373,7 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   font-size: 0.9rem;
   font-weight: 500;
 }
- 
+
 /* ============================================
    POST/HUNT TOGGLE (post.html)
    ============================================ */
@@ -1429,9 +1424,7 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   box-shadow: var(--shadow-md);
 }
 
-.form-panel.hidden {
-  display: none;
-}
+.form-panel.hidden { display: none; }
 
 .hunt-badge {
   display: inline-block;
@@ -1451,47 +1444,77 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   text-transform: none;
   letter-spacing: 0;
 }
+
 /* ================================================================
-   SHORTLIST / SAVED HOMES DRAWER
+   RIGHT-SIDE SHORTLIST FLOATING BASKET & DRAWER
    ================================================================ */
 
-/* Navbar Button & Badge */
+/* Floating Basket Trigger Button (Fixed Right Side) */
+#shortlist-floating-btn {
+  position: fixed;
+  bottom: 85px;
+  right: 25px;
+  background: var(--green-dark);
+  color: #FFFFFF;
+  border: 2px solid var(--gold);
+  border-radius: 30px;
+  padding: 12px 20px;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  z-index: 99990;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+#shortlist-floating-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  background: var(--green-main);
+}
+
+.shortlist-badge {
+  background: #EF4444;
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 12px;
+  line-height: 1;
+}
+
+/* Nav Link Button (Header optional shortcut) */
 #shortlist-nav-btn {
   background: transparent;
-  border: 1px solid var(--primary-color, #2563eb);
-  color: var(--primary-color, #2563eb);
+  border: 1px solid var(--gold);
+  color: #FFFFFF;
   padding: 6px 14px;
   border-radius: 20px;
+  font-family: var(--font-body);
   font-weight: 600;
+  font-size: 0.85rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: all 0.2s ease;
+  transition: var(--transition);
 }
 
 #shortlist-nav-btn:hover {
-  background: var(--primary-color, #2563eb);
-  color: #ffffff;
-}
-
-.shortlist-badge {
-  background: #ef4444;
-  color: #ffffff;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 10px;
-  line-height: 1;
+  background: var(--gold);
+  color: var(--green-dark);
 }
 
 /* Backdrop Overlay */
 .shortlist-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(15, 23, 42, 0.65);
   backdrop-filter: blur(4px);
-  z-index: 9998;
+  z-index: 99998;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
@@ -1502,20 +1525,20 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   pointer-events: auto;
 }
 
-/* Slide-out Drawer Panel */
+/* Slide-out Drawer Panel (Cart Basket) */
 .shortlist-drawer {
   position: fixed;
   top: 0;
   right: 0;
   width: 100%;
-  max-width: 400px;
+  max-width: 390px;
   height: 100vh;
-  background: var(--bg-card, #ffffff);
-  color: var(--text-color, #1e293b);
-  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
-  z-index: 9999;
+  background: var(--bg-card);
+  color: var(--text-dark);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.25);
+  z-index: 99999;
   transform: translateX(100%);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
 }
@@ -1527,98 +1550,118 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
 /* Drawer Header */
 .shortlist-header {
   padding: 20px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: var(--green-dark);
+  color: #FFFFFF;
 }
 
 .shortlist-header h3 {
   margin: 0;
+  font-family: var(--font-display);
   font-size: 1.25rem;
   display: flex;
   align-items: center;
   gap: 8px;
+  color: #FFFFFF;
 }
 
 .shortlist-close-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  line-height: 1;
   cursor: pointer;
-  color: inherit;
-  opacity: 0.7;
-  transition: opacity 0.2s;
+  color: rgba(255, 255, 255, 0.75);
+  transition: color 0.2s;
 }
 
 .shortlist-close-btn:hover {
-  opacity: 1;
+  color: var(--gold);
 }
 
-/* Drawer Content Body */
+/* Drawer Body */
 .shortlist-body {
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
 }
 
 .shortlist-empty {
   text-align: center;
-  color: #64748b;
+  color: var(--text-mid);
   margin: auto 0;
+  padding: 20px;
+}
+
+.shortlist-empty strong {
+  display: block;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  margin-bottom: 6px;
 }
 
 .shortlist-empty p {
-  margin-top: 8px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  margin: 0;
 }
 
-/* Shortlist Item Cards */
+/* Saved Item Cards in Drawer */
 .shortlist-item {
   display: flex;
   gap: 12px;
   align-items: center;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.03);
-  border-radius: 10px;
-  position: relative;
+  padding: 10px;
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
 }
 
 .shortlist-item img {
-  width: 65px;
-  height: 65px;
+  width: 70px;
+  height: 70px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
 }
 
 .shortlist-item-info {
   flex: 1;
+  min-width: 0;
 }
 
 .shortlist-item-info h4 {
   margin: 0 0 4px 0;
+  font-family: var(--font-display);
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .shortlist-item-info p {
   margin: 0;
-  font-size: 0.85rem;
-  color: #10b981;
+  font-size: 0.88rem;
+  color: var(--green-main);
   font-weight: 700;
 }
 
 .shortlist-remove-btn {
   background: none;
   border: none;
-  color: #ef4444;
+  color: #EF4444;
   cursor: pointer;
   padding: 6px;
-  font-size: 1.1rem;
-  opacity: 0.7;
+  font-size: 1.3rem;
+  line-height: 1;
+  opacity: 0.8;
   transition: opacity 0.2s;
 }
 
@@ -1628,28 +1671,31 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
 
 /* Drawer Footer */
 .shortlist-footer {
-  padding: 20px;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(0, 0, 0, 0.01);
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
 }
 
 .btn-shortlist-action {
   width: 100%;
   padding: 12px;
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--green-main);
+  color: #FFFFFF;
   border: none;
-  border-radius: 8px;
-  font-weight: 600;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .btn-shortlist-action:hover {
-  background: #1d4ed8;
+  background: var(--green-dark);
 }
 
 .btn-shortlist-action:disabled {
-  background: #cbd5e1;
+  background: var(--border);
+  color: var(--text-light);
   cursor: not-allowed;
 }
