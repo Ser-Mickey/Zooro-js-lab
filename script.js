@@ -8,6 +8,26 @@
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
+   const shortlistBtns = document.querySelectorAll('.shortlist-btn');
+
+  shortlistBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const icon = btn.querySelector('i');
+      btn.classList.toggle('active');
+
+      if (btn.classList.contains('active')) {
+        icon.classList.remove('fa-regular');
+        icon.classList.add('fa-solid');
+      } else {
+        icon.classList.remove('fa-solid');
+        icon.classList.add('fa-regular');
+      }
+    });
+  });
+});
   initWelcomeMessage();     // Feature 1: personalised welcome (Home)
   initHomeSearchValidation();
   initPostForm();           // Feature 2: form validation (Post a House)
