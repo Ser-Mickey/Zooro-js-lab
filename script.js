@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initListingsExpand();     // Feature 3: dynamic content (Listings)
   initListingsLiveFilter(); // Feature 3: dynamic content (Listings)
   initShortlistDrawer();    // Feature: My Shortlist slide-out drawer
+  initBookingModal();       // Feature 2: Client Property Booking & Application Modal
   initThemeToggle();        // Bonus: site-wide dark mode
   initBackToTop();          // Bonus: site-wide back-to-top button
 });
@@ -421,12 +422,133 @@ function initContactForm() {
 }
 
 /* ================================================================
+   FEATURE 2.1 — PROPERTY BOOKING & APPLICATION MODAL
+   ================================================================ */
+function initBookingModal() {
+  // Inject modal into HTML body if not existing
+  let modal = document.getElementById('booking-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'booking-modal';
+    modal.className = 'booking-modal-overlay';
+    modal.innerHTML = `
+      <div class="booking-modal-content">
+        <div class="booking-modal-header">
+          <h3>🏡 Book Property / Submit Application</h3>
+          <button type="button" class="booking-modal-close">&times;</button>
+        </div>
+        <form id="booking-form" noValidate>
+          <div class="form-group">
+            <label for="booking-property">Selected Property</label>
+            <input type="text" id="booking-property" name="property_title" readonly>
+          </div>
+          <div class="form-group">
+            <label for="booking-price">Rent Price</label>
+            <input type="text" id="booking-price" name="property_price" readonly>
+          </div>
+          <div class="form-group">
+            <label for="booking-name">Your Full Name *</label>
+            <input type="text" id="booking-name" name="client_name" required placeholder="John Doe">
+          </div>
+          <div class="form-group">
+            <label for="booking-phone">Phone Number *</label>
+            <input type="tel" id="booking-phone" name="client_phone" required placeholder="0712345678">
+          </div>
+          <div class="form-group">
+            <label for="booking-email">Email Address</label>
+            <input type="email" id="booking-email" name="client_email" placeholder="john@example.com">
+          </div>
+          <div class="form-group">
+            <label for="booking-date">Preferred Viewing / Move-in Date *</label>
+            <input type="date" id="booking-date" name="preferred_date" required>
+          </div>
+          <div class="form-group">
+            <label for="booking-notes">Special Requests / Notes</label>
+            <textarea id="booking-notes" name="notes" rows="2" placeholder="Any specific requirements..."></textarea>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%; margin-top:10px;">Submit Application</button>
+        </form>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  const closeBtn = modal.querySelector('.booking-modal-close');
+  const form = modal.querySelector('#booking-form');
+
+  function openModal(title, price) {
+    const savedName = localStorage.getItem('zooro_visitor_name') || '';
+    modal.querySelector('#booking-property').value = title || 'General Property Booking';
+    modal.querySelector('#booking-price').value = price || 'N/A';
+    modal.querySelector('#booking-name').value = savedName;
+    modal.classList.add('active');
+  }
+
+  function closeModal() {
+    modal.classList.remove('active');
+    form.reset();
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // Attach modal trigger to global window for external script trigger
+  window.openBookingModal = openModal;
+
+  // Handle Booking Submission
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let isValid = true;
+
+    const nameInput = form.querySelector('#booking-name');
+    const phoneInput = form.querySelector('#booking-phone');
+    const dateInput = form.querySelector('#booking-date');
+
+    [nameInput, phoneInput, dateInput].forEach(field => clearFieldError(field));
+
+    if (!nameInput.value.trim()) { showFieldError(nameInput, 'Name is required.'); isValid = false; }
+    if (!phoneInput.value.trim() || !/^\+?[\d\s-]{7,16}$/.test(phoneInput.value.trim())) { 
+      showFieldError(phoneInput, 'Valid phone number is required.'); isValid = false; 
+    }
+    if (!dateInput.value) { showFieldError(dateInput, 'Date is required.'); isValid = false; }
+
+    if (!isValid) return;
+
+    const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isLocalHost) {
+      const formData = new FormData(form);
+      fetch('process_booking.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) throw new Error(`Server status: ${response.status}`);
+        return response.text();
+      })
+      .then(() => {
+        showFormToast('🎉 Booking request saved to database!', true);
+        closeModal();
+      })
+      .catch(error => {
+        console.error('PHP Booking Error:', error);
+        showFormToast('❌ Backend error. Ensure Apache & MySQL are running in XAMPP.', false);
+      });
+    } else {
+      showFormToast('🎉 Booking application submitted successfully!', true);
+      closeModal();
+    }
+  });
+}
+
+/* ================================================================
    FEATURE 3 — DYNAMIC CONTENT & MY SHORTLIST
    ================================================================ */
 
 /* Helper function to dynamically extract the exact title from flip cards or listings */
 function extractCardTitle(card, fallbackIndex) {
-  // 1. Search headings in both gallery flip-cards and listing cards
   const titleSelectors = [
     '.flip-card-back h3',
     '.flip-card-front h3',
@@ -444,7 +566,6 @@ function extractCardTitle(card, fallbackIndex) {
     }
   }
 
-  // 2. Search inner text elements for descriptive house titles
   const candidates = card.querySelectorAll('p, span, div, strong');
   for (const el of candidates) {
     const txt = el.textContent.trim();
@@ -533,7 +654,6 @@ function initGalleryFavorites() {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
 
-      // DYNAMIC EXTRACTION: Captures exact property name & price directly from the card text
       const title = extractCardTitle(card, index);
       const price = extractCardPrice(card);
       const img = card.querySelector('img')?.src || 'assets/images/placeholder.jpg';
@@ -552,7 +672,6 @@ function initGalleryFavorites() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(currentItems));
       syncCardStates();
 
-      // Broadcast event so shortlist drawer updates in real-time
       window.dispatchEvent(new Event('shortlistUpdated'));
     });
   });
@@ -610,7 +729,6 @@ function initShortlistDrawer() {
   const closeBtn = drawer.querySelector('.shortlist-close-btn');
   const actionBtn = drawer.querySelector('#shortlist-action-btn');
 
-  // 3. Render Drawer Items with Exact Listed Title and Price
   function renderShortlist() {
     const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     if (countBadge) countBadge.textContent = items.length;
@@ -641,7 +759,6 @@ function initShortlistDrawer() {
       </div>
     `).join('');
 
-    // Attach Remove Event Handlers
     bodyEl.querySelectorAll('.shortlist-remove-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const idToRemove = e.currentTarget.getAttribute('data-id');
@@ -655,7 +772,6 @@ function initShortlistDrawer() {
     });
   }
 
-  // Toggle Drawer Open/Close
   function openDrawer() {
     renderShortlist();
     overlay.classList.add('active');
@@ -671,38 +787,53 @@ function initShortlistDrawer() {
   if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
   if (overlay) overlay.addEventListener('click', closeDrawer);
 
-  // Bulk Request Action Button
+  // Bulk Request Action Button -> Opens modal with shortlisted titles
   if (actionBtn) {
     actionBtn.addEventListener('click', () => {
       const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
       if (items.length === 0) return;
 
-      showFormToast(`📍 Viewing request sent for ${items.length} shortlisted home(s)!`, true);
+      const titles = items.map(i => i.title).join(', ');
       closeDrawer();
+      if (window.openBookingModal) {
+        window.openBookingModal(`Bulk Tour (${items.length} homes): ${titles}`, 'Multiple');
+      }
     });
   }
 
-  // Sync across tabs & components
   window.addEventListener('shortlistUpdated', renderShortlist);
   renderShortlist();
 }
 
-/* Listings: "View Details" expands an extra info panel per card */
+/* Listings: "View Details" expands extra info panel + Book Viewing button */
 function initListingsExpand() {
   const grid = document.querySelector('.listings-grid');
   const isListingsPage = document.querySelector('.filter-bar');
   if (!grid || !isListingsPage) return;
 
-  grid.querySelectorAll('.listing-card').forEach((card) => {
+  grid.querySelectorAll('.listing-card').forEach((card, index) => {
     const link = card.querySelector('.btn-view');
     if (!link) return;
 
     const cardBody = card.querySelector('.listing-card-body') || card;
     const panel = document.createElement('div');
     panel.className = 'details-panel';
-    panel.innerHTML = `<p>📍 Contact the landlord directly through Zooro to arrange a viewing.
-      Deposit and utility terms vary by property — always confirm before paying anything.</p>`;
+    panel.innerHTML = `
+      <p>📍 Contact the landlord directly through Zooro to arrange a viewing.
+      Deposit and utility terms vary by property — always confirm before paying anything.</p>
+      <button type="button" class="btn-primary btn-apply-now" style="margin-top:10px; width:100%;">⚡ Apply / Book Viewing</button>
+    `;
     cardBody.appendChild(panel);
+
+    const applyBtn = panel.querySelector('.btn-apply-now');
+    if (applyBtn) {
+      applyBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const title = extractCardTitle(card, index);
+        const price = extractCardPrice(card);
+        if (window.openBookingModal) window.openBookingModal(title, price);
+      });
+    }
 
     link.addEventListener('click', (e) => {
       e.preventDefault();
