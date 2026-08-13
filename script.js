@@ -330,9 +330,20 @@ function initContactForm() {
       isValid = false;
     }
 
-    if (!isValid) {
-      showFormToast('Please fix the errors highlighted below.', false);
-      return;
+   if (!isValid) {
+  const errorFields = form.querySelectorAll('.input-error');
+  
+  // 1. Focus & scroll to first error field smoothly
+  if (errorFields.length > 0) {
+    errorFields[0].focus();
+    errorFields[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // 2. Show clear, contextual toast feedback
+  const count = errorFields.length;
+  showFormToast(`⚠️ Please fix the ${count} error${count > 1 ? 's' : ''} highlighted above.`, false);
+  return;
+}
     }
 
     showFormToast("✅ Message sent! We'll get back to you within 24 hours.", true);
@@ -425,7 +436,7 @@ function initListingsExpand() {
   });
 }
 
-/* Listings: filter bar re-filters the grid live, no page reload */
+/* Listings: filter bar re-filters the grid live */
 function initListingsLiveFilter() {
   const filterForm = document.querySelector('.filter-bar');
   const grid = document.querySelector('.listings-grid');
@@ -482,7 +493,7 @@ function initListingsLiveFilter() {
 }
 
 /* ================================================================
-   BONUS — SITE-WIDE POLISH (not required, adds general functionality)
+   BONUS — SITE-WIDE POLISH (for general functionality)
    ================================================================ */
 
 /* Dark mode toggle, added into the nav on every page */
@@ -514,7 +525,7 @@ function initThemeToggle() {
   });
 }
 
-/* Floating back-to-top button, added on every page */
+/* Floating back-to-top button on every page */
 function initBackToTop() {
   const btn = document.createElement('button');
   btn.type = 'button';
