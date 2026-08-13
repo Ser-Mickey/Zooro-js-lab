@@ -1720,3 +1720,8 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   color: var(--text-light);
   cursor: not-allowed;
 }
+
+#search-input {
+  min-width: 250px;
+  flex: 1 1 250px; /* Expands nicely in flexbox */
+}
