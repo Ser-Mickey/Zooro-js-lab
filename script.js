@@ -460,8 +460,30 @@ function initGalleryFavorites() {
   }
 
   Array.from(galleryGrid.querySelectorAll('.flip-card')).forEach((card, index) => {
-    const title = card.querySelector('h3')?.textContent || `Property #${index + 1}`;
-    const price = card.querySelector('.price')?.textContent || 'KSh 25,000 / month';
+    // 1. Dynamic Title Extraction
+    const titleEl = card.querySelector('h3') || card.querySelector('h4') || card.querySelector('.card-title');
+    const title = titleEl ? titleEl.textContent.trim() : `Property #${index + 1}`;
+
+    // 2. Dynamic Price Extraction (checks multiple selectors & searches for 'KSh')
+    let price = '';
+    const priceEl = card.querySelector('.price') || card.querySelector('.listing-price') || card.querySelector('.card-price');
+    
+    if (priceEl) {
+      price = priceEl.textContent.trim();
+    } else {
+      // Scrape any element inside the card containing currency indicators
+      const candidates = card.querySelectorAll('p, span, div, h4, strong');
+      for (const el of candidates) {
+        if (el.children.length === 0 && (el.textContent.includes('KSh') || el.textContent.includes('/ month'))) {
+          price = el.textContent.trim();
+          break;
+        }
+      }
+    }
+
+    if (!price) price = 'Price on Request';
+
+    // 3. Image Extraction
     const img = card.querySelector('img')?.src || 'assets/images/placeholder.jpg';
     const itemId = `gallery-${index}`;
 
