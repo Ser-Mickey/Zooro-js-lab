@@ -312,8 +312,10 @@ section {
    LISTING CARDS
    ============================================ */
 .listings-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
   gap: 1.5rem;
 }
 
@@ -326,6 +328,22 @@ section {
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border);
   transition: var(--transition);
+} 
+.listing-card img,
+.listing-card .card-image {
+    width: 100% !important;
+    height: 220px !important;            /* Fixed vertical height for card banners */
+    aspect-ratio: 16 / 9 !important;     /* Standard photo ratio */
+    object-fit: cover !important;        /* Keeps clean crop without distorting proportions */
+    object-position: center !important;   /* Centers the focal point on the house */
+    display: block !important;
+}
+   
+@media (max-width: 768px) {
+    .listing-card {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+    }
 }
 
 .listing-card:hover {
