@@ -868,25 +868,60 @@ function initListingsLiveFilter() {
   }
 
   function applyFilters() {
-    const loc = locationSelect ? locationSelect.value : '';
-    const priceRange = priceSelect ? priceSelect.value : '';
-    const type = typeSelect ? typeSelect.value : '';
-    let visibleCount = 0;
+  const loc = locationSelect ? locationSelect.value : '';
+  const priceRange = priceSelect ? priceSelect.value : '';
+  const type = typeSelect ? typeSelect.value : '';
 
-    cards.forEach((card) => {
-      const heading = card.querySelector('h3')?.textContent || '';
-      const tag = card.querySelector('.listing-tag')?.textContent.trim() || '';
-      const priceText = card.querySelector('.listing-price')?.textContent || '';
-      const priceNum = parseInt(priceText.replace(/[^\d]/g, ''), 10) || 0;
+  const visibleCards = [];
+  const hiddenCards = [];
 
-      const matchesLocation = !loc || heading.toLowerCase().includes(loc.toLowerCase());
-      const matchesType = !type || tag === type;
-      const matchesPrice = priceInRange(priceNum, priceRange);
-      const visible = matchesLocation && matchesType && matchesPrice;
+  // 1. Evaluate filter matches
+  cards.forEach((card) => {
+    // Reset any previous recommendation styling
+    card.classList.remove('is-recommendation');
 
-      card.style.display = visible ? '' : 'none';
-      if (visible) visibleCount++;
+    const heading = card.querySelector('h3')?.textContent || '';
+    const tag = card.querySelector('.listing-tag')?.textContent.trim() || '';
+    const priceText = card.querySelector('.listing-price')?.textContent || '';
+    const priceNum = parseInt(priceText.replace(/[^\d]/g, ''), 10) || 0;
+
+    const matchesLocation = !loc || heading.toLowerCase().includes(loc.toLowerCase());
+    const matchesType = !type || tag === type;
+    const matchesPrice = priceInRange(priceNum, priceRange);
+
+    if (matchesLocation && matchesType && matchesPrice) {
+      visibleCards.push(card);
+    } else {
+      hiddenCards.push(card);
+    }
+  });
+
+  // 2. Hide all cards first
+  cards.forEach((card) => (card.style.display = 'none'));
+
+  // 3. Show matching cards
+  visibleCards.forEach((card) => (card.style.display = ''));
+
+  // 4. Recommendation Logic & Counter Text
+  const countElement = document.querySelector('.filter-results-count');
+
+  if (visibleCards.length === 1 && hiddenCards.length > 0) {
+    // Show 1 or 2 recommended listings alongside the 1 match
+    const recommendations = hiddenCards.slice(0, 2);
+    recommendations.forEach((card) => {
+      card.style.display = '';
+      card.classList.add('is-recommendation');
     });
+
+    if (countElement) {
+      countElement.textContent = `Showing 1 exact match and ${recommendations.length} recommended listing(s)`;
+    }
+  } else {
+    if (countElement) {
+      countElement.textContent = `Showing ${visibleCards.length} of ${cards.length} listings`;
+    }
+  }
+}
 
     countEl.textContent = `Showing ${visibleCount} of ${cards.length} listings`;
   }
