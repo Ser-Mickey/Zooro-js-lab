@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initGalleryFavorites();   // Feature 3: dynamic content (Gallery)
   initListingsExpand();     // Feature 3: dynamic content (Listings)
   initListingsLiveFilter(); // Feature 3: dynamic content (Listings)
+  initShortlistDrawer();    // Feature: My Shortlist slide-out drawer (Cart alternative)
   initThemeToggle();        // Bonus: site-wide dark mode
   initBackToTop();          // Bonus: site-wide back-to-top button
 });
@@ -77,7 +78,7 @@ function showFormToast(message, isSuccess = true) {
 function initWelcomeMessage() {
   const heroContent = document.querySelector('.hero-content');
   const searchBar = document.querySelector('.search-bar');
-  if (!heroContent || !searchBar) return; // only exists on the Home page
+  if (!heroContent || !searchBar) return;
 
   const STORAGE_KEY = 'zooro_visitor_name';
   let name = localStorage.getItem(STORAGE_KEY);
@@ -109,7 +110,6 @@ function initWelcomeMessage() {
   }
 }
 
-/* Quick validation for the homepage search bar (empty search is blocked) */
 function initHomeSearchValidation() {
   const searchForm = document.querySelector('.search-bar');
   if (!searchForm) return;
@@ -134,17 +134,16 @@ function initHomeSearchValidation() {
    FEATURE 2 — FORM VALIDATION & PROCESSORS
    ================================================================ */
 
-/* "Post a House" form (post.html) */
 function initPostForm() {
   const nameField = document.getElementById('landlord-name');
-  if (!nameField) return; // only exists on post.html
+  if (!nameField) return;
   const form = nameField.closest('form');
   form.noValidate = true;
 
   const requiredIds = ['landlord-name', 'phone', 'location', 'house-type', 'rent', 'available-from'];
 
   form.addEventListener('submit', (e) => {
-    e.preventDefault(); // Always prevent default page reload / direct browser post
+    e.preventDefault();
     let isValid = true;
 
     requiredIds.forEach((id) => {
@@ -188,11 +187,9 @@ function initPostForm() {
       return;
     }
 
-    // Check if running on localhost / XAMPP server
     const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
     if (isLocalHost) {
-      // Send data to PHP backend on local server
       const formData = new FormData(form);
       fetch('process_listing.php', {
         method: 'POST',
@@ -211,7 +208,6 @@ function initPostForm() {
         showFormToast('❌ Backend error. Make sure Apache & MySQL are running in XAMPP.', false);
       });
     } else {
-      // GitHub Pages / Static hosting simulation
       showFormToast("🎉 Listing submitted! We'll publish it within 24 hours.", true);
       resetPostForm(form);
     }
@@ -224,24 +220,22 @@ function initPostForm() {
   });
 }
 
-/** Helper to clear fields & upload box UI after successful post */
 function resetPostForm(form) {
   form.reset();
   const uploadAreaText = form.querySelector('.file-upload-area p');
   if (uploadAreaText) uploadAreaText.textContent = 'Choose file or drag and drop here';
 }
 
-/* "Request a House Hunt" form (post.html, tenant side) */
 function initHuntForm() {
   const nameField = document.getElementById('hunt-name');
-  if (!nameField) return; // only exists on post.html
+  if (!nameField) return;
   const form = nameField.closest('form');
   form.noValidate = true;
 
   const requiredIds = ['hunt-name', 'hunt-phone', 'hunt-location', 'hunt-house-type', 'hunt-budget', 'hunt-timeframe'];
 
   form.addEventListener('submit', (e) => {
-    e.preventDefault(); // Always prevent default page reload / direct browser post
+    e.preventDefault();
     let isValid = true;
 
     requiredIds.forEach((id) => {
@@ -269,11 +263,9 @@ function initHuntForm() {
       return;
     }
 
-    // Check if running on localhost / XAMPP server
     const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
     if (isLocalHost) {
-      // Send data to PHP backend on local server
       const formData = new FormData(form);
       fetch('process_hunt.php', {
         method: 'POST',
@@ -292,7 +284,6 @@ function initHuntForm() {
         showFormToast('❌ Backend error. Make sure Apache & MySQL are running in XAMPP.', false);
       });
     } else {
-      // GitHub Pages / Static hosting simulation
       showFormToast('🔍 Request received! A Zooro scout will reach out within 24 hours.', true);
       form.reset();
     }
@@ -305,13 +296,12 @@ function initHuntForm() {
   });
 }
 
-/* Toggle between "List a Property" and "Request a House Hunt" (post.html) */
 function initFormToggle() {
   const tabLandlord = document.getElementById('tab-landlord');
   const tabHunt = document.getElementById('tab-hunt');
   const panelLandlord = document.getElementById('panel-landlord');
   const panelHunt = document.getElementById('panel-hunt');
-  if (!tabLandlord || !tabHunt || !panelLandlord || !panelHunt) return; // only exists on post.html
+  if (!tabLandlord || !tabHunt || !panelLandlord || !panelHunt) return;
 
   function showLandlord() {
     panelLandlord.classList.remove('hidden');
@@ -335,7 +325,6 @@ function initFormToggle() {
   tabHunt.addEventListener('click', showHunt);
 }
 
-/* Displays selected photo file name on post.html */
 function initFileUploadPreview() {
   const photoInput = document.getElementById('photo-upload');
   if (!photoInput) return;
@@ -356,10 +345,9 @@ function initFileUploadPreview() {
   });
 }
 
-/* "Contact Us" form (contact.html) */
 function initContactForm() {
   const emailField = document.getElementById('email');
-  if (!emailField) return; // only exists on contact.html
+  if (!emailField) return;
   const form = emailField.closest('form');
   form.noValidate = true;
 
@@ -419,16 +407,16 @@ function initContactForm() {
 }
 
 /* ================================================================
-   FEATURE 3 — DYNAMIC CONTENT
+   FEATURE 3 — DYNAMIC CONTENT & MY SHORTLIST
    ================================================================ */
 
 /* Gallery: heart button on each flip-card, saved to localStorage */
 function initGalleryFavorites() {
   const galleryGrid = document.querySelector('.gallery-grid');
-  if (!galleryGrid) return; // only exists on gallery.html
+  if (!galleryGrid) return;
 
-  const STORAGE_KEY = 'zooro_favorites';
-  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  const STORAGE_KEY = 'zooro_shortlist_items';
+  const savedItems = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 
   const galleryHero = document.querySelector('.gallery-hero');
   const counter = document.createElement('p');
@@ -436,49 +424,188 @@ function initGalleryFavorites() {
   galleryHero?.appendChild(counter);
 
   function updateCounter() {
-    const count = galleryGrid.querySelectorAll('.favorite-btn.active').length;
-    counter.textContent = count > 0
-      ? `❤️ You've saved ${count} propert${count === 1 ? 'y' : 'ies'}`
-      : '🤍 Tap the heart on a card to save it';
+    const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    counter.textContent = current.length > 0
+      ? `❤️ You've saved ${current.length} propert${current.length === 1 ? 'y' : 'ies'}`
+      : '🤍 Tap the heart on a card to save it to your Shortlist';
   }
 
   Array.from(galleryGrid.querySelectorAll('.flip-card')).forEach((card, index) => {
+    const title = card.querySelector('h3')?.textContent || `Property #${index + 1}`;
+    const price = card.querySelector('.price')?.textContent || 'KSh 25,000 / month';
+    const img = card.querySelector('img')?.src || 'assets/images/placeholder.jpg';
+    const itemId = `gallery-${index}`;
+
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'favorite-btn';
-    btn.setAttribute('aria-label', 'Save to favourites');
-    btn.textContent = '♡';
+    btn.setAttribute('aria-label', 'Save to shortlist');
 
-    if (saved.includes(index)) {
+    const isSaved = savedItems.some(item => item.id === itemId);
+    if (isSaved) {
       btn.classList.add('active');
       btn.textContent = '❤️';
+    } else {
+      btn.textContent = '♡';
     }
 
     card.appendChild(btn);
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      btn.classList.toggle('active');
-      btn.textContent = btn.classList.contains('active') ? '❤️' : '♡';
+      let currentItems = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const existingIndex = currentItems.findIndex(item => item.id === itemId);
 
-      const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      const pos = current.indexOf(index);
-      if (btn.classList.contains('active') && pos === -1) current.push(index);
-      if (!btn.classList.contains('active') && pos > -1) current.splice(pos, 1);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+      if (existingIndex > -1) {
+        currentItems.splice(existingIndex, 1);
+        btn.classList.remove('active');
+        btn.textContent = '♡';
+        showFormToast('Removed from Shortlist', true);
+      } else {
+        currentItems.push({ id: itemId, title, price, img });
+        btn.classList.add('active');
+        btn.textContent = '❤️';
+        showFormToast('Added to Shortlist!', true);
+      }
 
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(currentItems));
       updateCounter();
+
+      // Dispatch custom event to notify shortlist drawer live
+      window.dispatchEvent(new Event('shortlistUpdated'));
     });
   });
 
   updateCounter();
 }
 
+/* My Shortlist Slide-out Drawer (Shopping Cart Alternative) */
+function initShortlistDrawer() {
+  const navLinks = document.querySelector('.nav-links');
+  if (!navLinks) return;
+
+  const STORAGE_KEY = 'zooro_shortlist_items';
+
+  // 1. Inject Shortlist Nav Button
+  const li = document.createElement('li');
+  const navBtn = document.createElement('button');
+  navBtn.type = 'button';
+  navBtn.id = 'shortlist-nav-btn';
+  navBtn.innerHTML = `❤️ Shortlist <span class="shortlist-badge" id="shortlist-count">0</span>`;
+  li.appendChild(navBtn);
+  navLinks.appendChild(li);
+
+  // 2. Inject Backdrop & Drawer HTML into body
+  const overlay = document.createElement('div');
+  overlay.className = 'shortlist-overlay';
+
+  const drawer = document.createElement('aside');
+  drawer.className = 'shortlist-drawer';
+  drawer.innerHTML = `
+    <div class="shortlist-header">
+      <h3>❤️ My Shortlist</h3>
+      <button class="shortlist-close-btn" aria-label="Close shortlist">&times;</button>
+    </div>
+    <div class="shortlist-body" id="shortlist-body"></div>
+    <div class="shortlist-footer">
+      <button class="btn-shortlist-action" id="shortlist-action-btn">Request Bulk Viewing Tour</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  document.body.appendChild(drawer);
+
+  const bodyEl = drawer.querySelector('#shortlist-body');
+  const countBadge = navBtn.querySelector('#shortlist-count');
+  const closeBtn = drawer.querySelector('.shortlist-close-btn');
+  const actionBtn = drawer.querySelector('#shortlist-action-btn');
+
+  // 3. Render Drawer Items
+  function renderShortlist() {
+    const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    countBadge.textContent = items.length;
+
+    if (items.length === 0) {
+      bodyEl.innerHTML = `
+        <div class="shortlist-empty">
+          <p style="font-size: 2.5rem; margin-bottom: 5px;">🏡</p>
+          <strong>Your shortlist is empty</strong>
+          <p>Tap the heart icon on any house card to save properties here for comparison!</p>
+        </div>
+      `;
+      actionBtn.disabled = true;
+      return;
+    }
+
+    actionBtn.disabled = false;
+    bodyEl.innerHTML = items.map((item) => `
+      <div class="shortlist-item">
+        <img src="${item.img}" alt="${escapeHTML(item.title)}">
+        <div class="shortlist-item-info">
+          <h4>${escapeHTML(item.title)}</h4>
+          <p>${escapeHTML(item.price)}</p>
+        </div>
+        <button class="shortlist-remove-btn" data-id="${item.id}" aria-label="Remove item">&times;</button>
+      </div>
+    `).join('');
+
+    // Attach Remove Event Handlers
+    bodyEl.querySelectorAll('.shortlist-remove-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idToRemove = e.currentTarget.getAttribute('data-id');
+        let current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        current = current.filter(item => item.id !== idToRemove);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+        
+        renderShortlist();
+        
+        // Reload gallery active hearts if on gallery page
+        const galleryCardBtn = document.querySelector(`.favorite-btn[data-id="${idToRemove}"]`);
+        if (galleryCardBtn) {
+          galleryCardBtn.classList.remove('active');
+          galleryCardBtn.textContent = '♡';
+        }
+
+        window.dispatchEvent(new Event('shortlistUpdated'));
+      });
+    });
+  }
+
+  // Toggle Drawer Open/Close
+  function openDrawer() {
+    renderShortlist();
+    overlay.classList.add('active');
+    drawer.classList.add('open');
+  }
+
+  function closeDrawer() {
+    overlay.classList.remove('active');
+    drawer.classList.remove('open');
+  }
+
+  navBtn.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+
+  // Bulk Request Action Button
+  actionBtn.addEventListener('click', () => {
+    const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    if (items.length === 0) return;
+
+    showFormToast(`📍 Viewing request sent for ${items.length} shortlisted home(s)!`, true);
+    closeDrawer();
+  });
+
+  // Sync across tabs & components
+  window.addEventListener('shortlistUpdated', renderShortlist);
+  renderShortlist();
+}
+
 /* Listings: "View Details" expands an extra info panel per card */
 function initListingsExpand() {
   const grid = document.querySelector('.listings-grid');
   const isListingsPage = document.querySelector('.filter-bar');
-  if (!grid || !isListingsPage) return; // only exists on listings.html
+  if (!grid || !isListingsPage) return;
 
   grid.querySelectorAll('.listing-card').forEach((card) => {
     const link = card.querySelector('.btn-view');
@@ -502,7 +629,7 @@ function initListingsExpand() {
 function initListingsLiveFilter() {
   const filterForm = document.querySelector('.filter-bar');
   const grid = document.querySelector('.listings-grid');
-  if (!filterForm || !grid) return; // only exists on listings.html
+  if (!filterForm || !grid) return;
 
   const locationSelect = document.getElementById('location');
   const priceSelect = document.getElementById('price');
@@ -555,10 +682,9 @@ function initListingsLiveFilter() {
 }
 
 /* ================================================================
-   BONUS — SITE-WIDE POLISH (for general functionality)
+   BONUS — SITE-WIDE POLISH
    ================================================================ */
 
-/* Dark mode toggle, added into the nav on every page */
 function initThemeToggle() {
   const navLinks = document.querySelector('.nav-links');
   if (!navLinks) return;
@@ -587,7 +713,6 @@ function initThemeToggle() {
   });
 }
 
-/* Floating back-to-top button on every page */
 function initBackToTop() {
   const btn = document.createElement('button');
   btn.type = 'button';
