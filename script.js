@@ -116,16 +116,18 @@ function initHomeSearchValidation() {
 
   searchForm.addEventListener('submit', (e) => {
     const input = searchForm.querySelector('input[name="area"]');
-    if (!input.value.trim()) {
+    if (!input || !input.value.trim()) {
       e.preventDefault();
-      input.classList.add('input-error');
-      const original = input.placeholder;
-      input.placeholder = 'Please type an area first...';
-      input.focus();
-      setTimeout(() => {
-        input.classList.remove('input-error');
-        input.placeholder = original;
-      }, 1800);
+      if (input) {
+        input.classList.add('input-error');
+        const original = input.placeholder;
+        input.placeholder = 'Please type an area first...';
+        input.focus();
+        setTimeout(() => {
+          input.classList.remove('input-error');
+          input.placeholder = original;
+        }, 1800);
+      }
     }
   });
 }
@@ -138,6 +140,7 @@ function initPostForm() {
   const nameField = document.getElementById('landlord-name');
   if (!nameField) return;
   const form = nameField.closest('form');
+  if (!form) return;
   form.noValidate = true;
 
   const requiredIds = ['landlord-name', 'phone', 'location', 'house-type', 'rent', 'available-from'];
@@ -148,6 +151,7 @@ function initPostForm() {
 
     requiredIds.forEach((id) => {
       const field = document.getElementById(id);
+      if (!field) return;
       clearFieldError(field);
       if (!field.value.trim()) {
         showFieldError(field, 'This field is required.');
@@ -156,19 +160,19 @@ function initPostForm() {
     });
 
     const phone = document.getElementById('phone');
-    if (phone.value.trim() && !/^\+?[\d\s-]{7,16}$/.test(phone.value.trim())) {
+    if (phone && phone.value.trim() && !/^\+?[\d\s-]{7,16}$/.test(phone.value.trim())) {
       showFieldError(phone, 'Enter a valid phone number.');
       isValid = false;
     }
 
     const rent = document.getElementById('rent');
-    if (rent.value && Number(rent.value) < 1000) {
+    if (rent && rent.value && Number(rent.value) < 1000) {
       showFieldError(rent, 'Rent should be at least KSh 1,000.');
       isValid = false;
     }
 
     const availableFrom = document.getElementById('available-from');
-    if (availableFrom.value) {
+    if (availableFrom && availableFrom.value) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       if (new Date(availableFrom.value) < today) {
@@ -215,6 +219,7 @@ function initPostForm() {
 
   requiredIds.forEach((id) => {
     const field = document.getElementById(id);
+    if (!field) return;
     field.addEventListener('input', () => clearFieldError(field));
     field.addEventListener('change', () => clearFieldError(field));
   });
@@ -230,6 +235,7 @@ function initHuntForm() {
   const nameField = document.getElementById('hunt-name');
   if (!nameField) return;
   const form = nameField.closest('form');
+  if (!form) return;
   form.noValidate = true;
 
   const requiredIds = ['hunt-name', 'hunt-phone', 'hunt-location', 'hunt-house-type', 'hunt-budget', 'hunt-timeframe'];
@@ -240,6 +246,7 @@ function initHuntForm() {
 
     requiredIds.forEach((id) => {
       const field = document.getElementById(id);
+      if (!field) return;
       clearFieldError(field);
       if (!field.value.trim()) {
         showFieldError(field, 'This field is required.');
@@ -248,7 +255,7 @@ function initHuntForm() {
     });
 
     const phone = document.getElementById('hunt-phone');
-    if (phone.value.trim() && !/^\+?[\d\s-]{7,16}$/.test(phone.value.trim())) {
+    if (phone && phone.value.trim() && !/^\+?[\d\s-]{7,16}$/.test(phone.value.trim())) {
       showFieldError(phone, 'Enter a valid phone number.');
       isValid = false;
     }
@@ -291,6 +298,7 @@ function initHuntForm() {
 
   requiredIds.forEach((id) => {
     const field = document.getElementById(id);
+    if (!field) return;
     field.addEventListener('input', () => clearFieldError(field));
     field.addEventListener('change', () => clearFieldError(field));
   });
@@ -337,10 +345,10 @@ function initFileUploadPreview() {
     if (e.target.files && e.target.files.length > 0) {
       const fileName = e.target.files[0].name;
       if (textElement) textElement.textContent = `Selected File: ${fileName}`;
-      uploadArea.style.borderColor = '#10b981';
+      uploadArea.style.borderColor = 'var(--green-main, #10b981)';
     } else {
       if (textElement) textElement.textContent = 'Choose file or drag and drop here';
-      uploadArea.style.borderColor = '#cbd5e1';
+      uploadArea.style.borderColor = '';
     }
   });
 }
@@ -349,6 +357,7 @@ function initContactForm() {
   const emailField = document.getElementById('email');
   if (!emailField) return;
   const form = emailField.closest('form');
+  if (!form) return;
   form.noValidate = true;
 
   const requiredIds = ['name', 'email', 'message'];
@@ -359,6 +368,7 @@ function initContactForm() {
 
     requiredIds.forEach((id) => {
       const field = document.getElementById(id);
+      if (!field) return;
       clearFieldError(field);
       if (!field.value.trim()) {
         showFieldError(field, 'This field is required.');
@@ -380,7 +390,11 @@ function initContactForm() {
         const error = document.createElement('span');
         error.className = 'field-error';
         error.textContent = 'Please confirm you agree to be contacted.';
-        agreeLabel.insertAdjacentElement('afterend', error);
+        if (agreeLabel) {
+          agreeLabel.insertAdjacentElement('afterend', error);
+        } else {
+          agree.insertAdjacentElement('afterend', error);
+        }
         isValid = false;
       }
     }
@@ -416,7 +430,6 @@ function initGalleryFavorites() {
   if (!galleryGrid) return;
 
   const STORAGE_KEY = 'zooro_shortlist_items';
-  const savedItems = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 
   const galleryHero = document.querySelector('.gallery-hero');
   const counter = document.createElement('p');
@@ -430,6 +443,22 @@ function initGalleryFavorites() {
       : '🤍 Tap the heart on a card to save it to your Shortlist';
   }
 
+  function syncCardStates() {
+    const savedItems = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    galleryGrid.querySelectorAll('.favorite-btn').forEach((btn) => {
+      const itemId = btn.getAttribute('data-id');
+      const isSaved = savedItems.some(item => item.id === itemId);
+      if (isSaved) {
+        btn.classList.add('active');
+        btn.textContent = '❤️';
+      } else {
+        btn.classList.remove('active');
+        btn.textContent = '♡';
+      }
+    });
+    updateCounter();
+  }
+
   Array.from(galleryGrid.querySelectorAll('.flip-card')).forEach((card, index) => {
     const title = card.querySelector('h3')?.textContent || `Property #${index + 1}`;
     const price = card.querySelector('.price')?.textContent || 'KSh 25,000 / month';
@@ -439,15 +468,8 @@ function initGalleryFavorites() {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'favorite-btn';
+    btn.setAttribute('data-id', itemId);
     btn.setAttribute('aria-label', 'Save to shortlist');
-
-    const isSaved = savedItems.some(item => item.id === itemId);
-    if (isSaved) {
-      btn.classList.add('active');
-      btn.textContent = '❤️';
-    } else {
-      btn.textContent = '♡';
-    }
 
     card.appendChild(btn);
 
@@ -458,25 +480,22 @@ function initGalleryFavorites() {
 
       if (existingIndex > -1) {
         currentItems.splice(existingIndex, 1);
-        btn.classList.remove('active');
-        btn.textContent = '♡';
         showFormToast('Removed from Shortlist', true);
       } else {
         currentItems.push({ id: itemId, title, price, img });
-        btn.classList.add('active');
-        btn.textContent = '❤️';
         showFormToast('Added to Shortlist!', true);
       }
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(currentItems));
-      updateCounter();
+      syncCardStates();
 
       // Dispatch custom event to notify shortlist drawer live
       window.dispatchEvent(new Event('shortlistUpdated'));
     });
   });
 
-  updateCounter();
+  syncCardStates();
+  window.addEventListener('shortlistUpdated', syncCardStates);
 }
 
 /* My Shortlist Slide-out Drawer (Shopping Cart Alternative) */
@@ -523,7 +542,9 @@ function initShortlistDrawer() {
   // 3. Render Drawer Items
   function renderShortlist() {
     const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    countBadge.textContent = items.length;
+    if (countBadge) countBadge.textContent = items.length;
+
+    if (!bodyEl) return;
 
     if (items.length === 0) {
       bodyEl.innerHTML = `
@@ -533,11 +554,11 @@ function initShortlistDrawer() {
           <p>Tap the heart icon on any house card to save properties here for comparison!</p>
         </div>
       `;
-      actionBtn.disabled = true;
+      if (actionBtn) actionBtn.disabled = true;
       return;
     }
 
-    actionBtn.disabled = false;
+    if (actionBtn) actionBtn.disabled = false;
     bodyEl.innerHTML = items.map((item) => `
       <div class="shortlist-item">
         <img src="${item.img}" alt="${escapeHTML(item.title)}">
@@ -556,16 +577,8 @@ function initShortlistDrawer() {
         let current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
         current = current.filter(item => item.id !== idToRemove);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
-        
-        renderShortlist();
-        
-        // Reload gallery active hearts if on gallery page
-        const galleryCardBtn = document.querySelector(`.favorite-btn[data-id="${idToRemove}"]`);
-        if (galleryCardBtn) {
-          galleryCardBtn.classList.remove('active');
-          galleryCardBtn.textContent = '♡';
-        }
 
+        renderShortlist();
         window.dispatchEvent(new Event('shortlistUpdated'));
       });
     });
@@ -584,17 +597,19 @@ function initShortlistDrawer() {
   }
 
   navBtn.addEventListener('click', openDrawer);
-  closeBtn.addEventListener('click', closeDrawer);
+  if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
   overlay.addEventListener('click', closeDrawer);
 
   // Bulk Request Action Button
-  actionBtn.addEventListener('click', () => {
-    const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    if (items.length === 0) return;
+  if (actionBtn) {
+    actionBtn.addEventListener('click', () => {
+      const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      if (items.length === 0) return;
 
-    showFormToast(`📍 Viewing request sent for ${items.length} shortlisted home(s)!`, true);
-    closeDrawer();
-  });
+      showFormToast(`📍 Viewing request sent for ${items.length} shortlisted home(s)!`, true);
+      closeDrawer();
+    });
+  }
 
   // Sync across tabs & components
   window.addEventListener('shortlistUpdated', renderShortlist);
@@ -611,11 +626,12 @@ function initListingsExpand() {
     const link = card.querySelector('.btn-view');
     if (!link) return;
 
+    const cardBody = card.querySelector('.listing-card-body') || card;
     const panel = document.createElement('div');
     panel.className = 'details-panel';
     panel.innerHTML = `<p>📍 Contact the landlord directly through Zooro to arrange a viewing.
       Deposit and utility terms vary by property — always confirm before paying anything.</p>`;
-    card.querySelector('.listing-card-body').appendChild(panel);
+    cardBody.appendChild(panel);
 
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -650,9 +666,9 @@ function initListingsLiveFilter() {
   }
 
   function applyFilters() {
-    const loc = locationSelect.value;
-    const priceRange = priceSelect.value;
-    const type = typeSelect.value;
+    const loc = locationSelect ? locationSelect.value : '';
+    const priceRange = priceSelect ? priceSelect.value : '';
+    const type = typeSelect ? typeSelect.value : '';
     let visibleCount = 0;
 
     cards.forEach((card) => {
@@ -661,7 +677,7 @@ function initListingsLiveFilter() {
       const priceText = card.querySelector('.listing-price')?.textContent || '';
       const priceNum = parseInt(priceText.replace(/[^\d]/g, ''), 10) || 0;
 
-      const matchesLocation = !loc || heading.includes(loc);
+      const matchesLocation = !loc || heading.toLowerCase().includes(loc.toLowerCase());
       const matchesType = !type || tag === type;
       const matchesPrice = priceInRange(priceNum, priceRange);
       const visible = matchesLocation && matchesType && matchesPrice;
@@ -675,7 +691,9 @@ function initListingsLiveFilter() {
 
   filterForm.addEventListener('submit', (e) => e.preventDefault());
   [locationSelect, priceSelect, typeSelect].forEach((select) => {
-    select.addEventListener('change', applyFilters);
+    if (select) {
+      select.addEventListener('change', applyFilters);
+    }
   });
 
   applyFilters();
