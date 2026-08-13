@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Post a House &amp; House Hunt Requests — Zooro Kenya</title>
   <link rel="stylesheet" href="style.css" />
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
@@ -14,13 +16,11 @@
         <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="zooroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#2563EB" /> <!-- Modern Indigo Blue -->
-              <stop offset="100%" stop-color="#10B981" /> <!-- Fresh Emerald Green -->
+              <stop offset="0%" stop-color="#2563EB" />
+              <stop offset="100%" stop-color="#10B981" />
             </linearGradient>
           </defs>
-          <!-- Roof + Z-letter combined mark -->
           <path d="M 15 42 L 50 15 L 85 42 L 72 42 L 35 72 L 85 72 L 85 85 L 15 85 L 15 72 L 58 42 Z" fill="url(#zooroGradient)" />
-          <!-- Accent Door/Location Pin element -->
           <circle cx="50" cy="55" r="7" fill="#2563EB" />
         </svg>
         <span class="brand-name">ooro<span class="brand-dot">.</span></span>
@@ -46,10 +46,10 @@
     <!-- TOGGLE TABS -->
     <div class="form-toggle" role="tablist">
       <button type="button" id="tab-landlord" class="toggle-tab active" role="tab" aria-selected="true">
-        🏠 List a Property
+        <i class="fa-solid fa-house-circle-check"></i> List a Property
       </button>
       <button type="button" id="tab-hunt" class="toggle-tab" role="tab" aria-selected="false">
-        🔍 Request a House Hunt
+        <i class="fa-solid fa-magnifying-glass-location"></i> Request a House Hunt
       </button>
     </div>
 
@@ -61,7 +61,6 @@
           <p>Fill in the details below and we'll publish your listing within 24 hours.</p>
         </div>
 
-        <!-- Action connects to process_listing.php with multipart encoding for image upload -->
         <form action="process_listing.php" method="POST" enctype="multipart/form-data">
 
           <div class="form-row">
@@ -120,7 +119,7 @@
             <label class="file-upload-area" for="photo-upload">
               <input type="file" id="photo-upload" name="photos"
                      accept="image/*" />
-              <div class="upload-icon">📷</div>
+              <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
               <p>Choose file or drag and drop here</p>
               <span>PNG, JPG up to 5MB</span>
             </label>
@@ -141,7 +140,6 @@
           <p>Can't find the right house on Listings? Submit a request and a Zooro scout will search for it and get back to you within 24 hours.</p>
         </div>
 
-        <!-- Action connects to process_hunt.php -->
         <form action="process_hunt.php" method="POST">
 
           <div class="form-row">
@@ -217,7 +215,7 @@
   <footer>
     <div class="footer-inner">
       <div class="footer-brand">
-        <div class="nav-logo">🏠 Zooro<span style="color:var(--gold)">Kenya</span></div>
+        <div class="nav-logo"><i class="fa-solid fa-house-chimney"></i> Zooro<span style="color:var(--gold)">Kenya</span></div>
         <p>Your trusted platform for finding verified rental homes across Nairobi's finest estates.</p>
       </div>
       <div class="footer-col">
@@ -233,9 +231,9 @@
       <div class="footer-col">
         <h5>Contact</h5>
         <ul>
-          <li><a href="mailto:hello@zooro.co.ke">hello@zooro.co.ke</a></li>
-          <li><a href="tel:+254700111000">+254 700 111 000</a></li>
-          <li><span>Nairobi, Kenya</span></li>
+          <li><a href="mailto:hello@zooro.co.ke"><i class="fa-regular fa-envelope"></i> hello@zooro.co.ke</a></li>
+          <li><a href="tel:+254700111000"><i class="fa-solid fa-phone"></i> +254 700 111 000</a></li>
+          <li><span><i class="fa-solid fa-location-dot"></i> Nairobi, Kenya</span></li>
         </ul>
       </div>
     </div>
