@@ -1451,3 +1451,205 @@ body.dark-theme .summary-table tbody tr:nth-child(even) { background: rgba(255,2
   text-transform: none;
   letter-spacing: 0;
 }
+/* ================================================================
+   SHORTLIST / SAVED HOMES DRAWER
+   ================================================================ */
+
+/* Navbar Button & Badge */
+#shortlist-nav-btn {
+  background: transparent;
+  border: 1px solid var(--primary-color, #2563eb);
+  color: var(--primary-color, #2563eb);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+#shortlist-nav-btn:hover {
+  background: var(--primary-color, #2563eb);
+  color: #ffffff;
+}
+
+.shortlist-badge {
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  line-height: 1;
+}
+
+/* Backdrop Overlay */
+.shortlist-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.shortlist-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Slide-out Drawer Panel */
+.shortlist-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 400px;
+  height: 100vh;
+  background: var(--bg-card, #ffffff);
+  color: var(--text-color, #1e293b);
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.shortlist-drawer.open {
+  transform: translateX(0);
+}
+
+/* Drawer Header */
+.shortlist-header {
+  padding: 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.shortlist-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shortlist-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.shortlist-close-btn:hover {
+  opacity: 1;
+}
+
+/* Drawer Content Body */
+.shortlist-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.shortlist-empty {
+  text-align: center;
+  color: #64748b;
+  margin: auto 0;
+}
+
+.shortlist-empty p {
+  margin-top: 8px;
+  font-size: 0.95rem;
+}
+
+/* Shortlist Item Cards */
+.shortlist-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  position: relative;
+}
+
+.shortlist-item img {
+  width: 65px;
+  height: 65px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.shortlist-item-info {
+  flex: 1;
+}
+
+.shortlist-item-info h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.shortlist-item-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #10b981;
+  font-weight: 700;
+}
+
+.shortlist-remove-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 6px;
+  font-size: 1.1rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.shortlist-remove-btn:hover {
+  opacity: 1;
+}
+
+/* Drawer Footer */
+.shortlist-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.01);
+}
+
+.btn-shortlist-action {
+  width: 100%;
+  padding: 12px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-shortlist-action:hover {
+  background: #1d4ed8;
+}
+
+.btn-shortlist-action:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
