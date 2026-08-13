@@ -139,12 +139,12 @@ function initPostForm() {
   const nameField = document.getElementById('landlord-name');
   if (!nameField) return; // only exists on post.html
   const form = nameField.closest('form');
-  form.noValidate = true; // hand validation fully to JS
+  form.noValidate = true;
 
   const requiredIds = ['landlord-name', 'phone', 'location', 'house-type', 'rent', 'available-from'];
 
   form.addEventListener('submit', (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Always prevent default page reload / direct browser post
     let isValid = true;
 
     requiredIds.forEach((id) => {
@@ -179,13 +179,42 @@ function initPostForm() {
     }
 
     if (!isValid) {
-      showFormToast('Please fix the errors highlighted below.', false);
-      form.querySelector('.input-error')?.focus();
+      const errorFields = form.querySelectorAll('.input-error');
+      if (errorFields.length > 0) {
+        errorFields[0].focus();
+        errorFields[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      showFormToast(`⚠️ Please fix the ${errorFields.length} error(s) highlighted below.`, false);
       return;
     }
 
-    // Submit validated data to process_listing.php
-    form.submit();
+    // Check if running on localhost / XAMPP server
+    const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isLocalHost) {
+      // Send data to PHP backend on local server
+      const formData = new FormData(form);
+      fetch('process_listing.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) throw new Error(`Server status: ${response.status}`);
+        return response.text();
+      })
+      .then(() => {
+        showFormToast("🎉 Listing submitted and saved to database!", true);
+        resetPostForm(form);
+      })
+      .catch(error => {
+        console.error('PHP Post Error:', error);
+        showFormToast('❌ Backend error. Make sure Apache & MySQL are running in XAMPP.', false);
+      });
+    } else {
+      // GitHub Pages / Static hosting simulation
+      showFormToast("🎉 Listing submitted! We'll publish it within 24 hours.", true);
+      resetPostForm(form);
+    }
   });
 
   requiredIds.forEach((id) => {
@@ -193,6 +222,13 @@ function initPostForm() {
     field.addEventListener('input', () => clearFieldError(field));
     field.addEventListener('change', () => clearFieldError(field));
   });
+}
+
+/** Helper to clear fields & upload box UI after successful post */
+function resetPostForm(form) {
+  form.reset();
+  const uploadAreaText = form.querySelector('.file-upload-area p');
+  if (uploadAreaText) uploadAreaText.textContent = 'Choose file or drag and drop here';
 }
 
 /* "Request a House Hunt" form (post.html, tenant side) */
@@ -205,7 +241,7 @@ function initHuntForm() {
   const requiredIds = ['hunt-name', 'hunt-phone', 'hunt-location', 'hunt-house-type', 'hunt-budget', 'hunt-timeframe'];
 
   form.addEventListener('submit', (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Always prevent default page reload / direct browser post
     let isValid = true;
 
     requiredIds.forEach((id) => {
@@ -224,13 +260,42 @@ function initHuntForm() {
     }
 
     if (!isValid) {
-      showFormToast('Please fix the errors highlighted below.', false);
-      form.querySelector('.input-error')?.focus();
+      const errorFields = form.querySelectorAll('.input-error');
+      if (errorFields.length > 0) {
+        errorFields[0].focus();
+        errorFields[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      showFormToast(`⚠️ Please fix the ${errorFields.length} error(s) highlighted below.`, false);
       return;
     }
 
-    // Submit validated data to process_hunt.php
-    form.submit();
+    // Check if running on localhost / XAMPP server
+    const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isLocalHost) {
+      // Send data to PHP backend on local server
+      const formData = new FormData(form);
+      fetch('process_hunt.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) throw new Error(`Server status: ${response.status}`);
+        return response.text();
+      })
+      .then(() => {
+        showFormToast('🔍 House hunt request saved to database!', true);
+        form.reset();
+      })
+      .catch(error => {
+        console.error('PHP Hunt Error:', error);
+        showFormToast('❌ Backend error. Make sure Apache & MySQL are running in XAMPP.', false);
+      });
+    } else {
+      // GitHub Pages / Static hosting simulation
+      showFormToast('🔍 Request received! A Zooro scout will reach out within 24 hours.', true);
+      form.reset();
+    }
   });
 
   requiredIds.forEach((id) => {
@@ -319,31 +384,28 @@ function initContactForm() {
     }
 
     const agree = form.querySelector('input[name="agree"]');
-    const agreeLabel = agree.closest('.checkbox-label');
-    const oldAgreeError = agreeLabel.parentElement.querySelector('.field-error');
-    if (oldAgreeError) oldAgreeError.remove();
-    if (!agree.checked) {
-      const error = document.createElement('span');
-      error.className = 'field-error';
-      error.textContent = 'Please confirm you agree to be contacted.';
-      agreeLabel.insertAdjacentElement('afterend', error);
-      isValid = false;
+    if (agree) {
+      const agreeLabel = agree.closest('.checkbox-label');
+      const oldAgreeError = agreeLabel?.parentElement.querySelector('.field-error');
+      if (oldAgreeError) oldAgreeError.remove();
+      if (!agree.checked) {
+        const error = document.createElement('span');
+        error.className = 'field-error';
+        error.textContent = 'Please confirm you agree to be contacted.';
+        agreeLabel.insertAdjacentElement('afterend', error);
+        isValid = false;
+      }
     }
 
-   if (!isValid) {
-  const errorFields = form.querySelectorAll('.input-error');
-  
-  // 1. Focus & scroll to first error field smoothly
-  if (errorFields.length > 0) {
-    errorFields[0].focus();
-    errorFields[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-
-  // 2. Show clear, contextual toast feedback
-  const count = errorFields.length;
-  showFormToast(`⚠️ Please fix the ${count} error${count > 1 ? 's' : ''} highlighted above.`, false);
-  return;
-}
+    if (!isValid) {
+      const errorFields = form.querySelectorAll('.input-error');
+      if (errorFields.length > 0) {
+        errorFields[0].focus();
+        errorFields[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      const count = errorFields.length;
+      showFormToast(`⚠️ Please fix the ${count} error${count > 1 ? 's' : ''} highlighted below.`, false);
+      return;
     }
 
     showFormToast("✅ Message sent! We'll get back to you within 24 hours.", true);
@@ -352,7 +414,7 @@ function initContactForm() {
 
   requiredIds.forEach((id) => {
     const field = document.getElementById(id);
-    field.addEventListener('input', () => clearFieldError(field));
+    field?.addEventListener('input', () => clearFieldError(field));
   });
 }
 
